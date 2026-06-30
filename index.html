@@ -1,14 +1,1667 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple HTML</title>
-</head>
-<body>
+<!doctype html>
+<html lang="en" class="scroll-smooth bg-white">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firefox — Team Profile</title>
+    
+    <!-- Google Fonts: Elegant Serif paired with Modern Sans & Tech Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS v3 CDN for instant rendering & lightweight bundle -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+              sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+            },
+            colors: {
+              sakura: '#FFEDD5', // Elegant fire-warm gold/peach tone
+              plum: '#EA580C',   // Vibrant fire-fox orange
+              charcoal: '#1E1B18',
+              muted: '#78716C',
+              borderLight: '#F5F5F4',
+            },
+            boxShadow: {
+              premium: '0 4px 20px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+              hover3d: '0 12px 30px rgba(234, 88, 12, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
+            }
+          }
+        }
+      }
+    </script>
 
-    <h1>Hello, World!</h1>
-    <p>This is a simple HTML page.</p>
+    <!-- Custom CSS Styles for Micro-animations, Transitions, and Custom Scrollbar -->
+    <style>
+      /* Smooth transitions for all interactive elements */
+      .transition-premium {
+        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      
+      /* Subtle parallax and scroll-reveal triggers */
+      .reveal-on-scroll {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      
+      .reveal-on-scroll.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
 
-</body>
+      /* Custom scrollbar matching the minimal Firefox theme */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #FFFFFF;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #F5F5F4;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #FFEDD5;
+      }
+
+      /* Highlight Sweep Animation for Badges */
+      @keyframes sweep {
+        0% { transform: translate(-110%, -10%) skewX(-12deg); }
+        100% { transform: translate(110%, -10%) skewX(-12deg); }
+      }
+      .badge-sweep:hover .sweep-element {
+        animation: sweep 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      /* Inline Edit Mode Styles */
+      .edit-mode-active [data-edit-key] {
+        outline: 1.5px dashed rgba(234, 88, 12, 0.4);
+        border-radius: 4px;
+        transition: outline 0.2s ease, background-color 0.2s ease;
+      }
+      .edit-mode-active [data-edit-key]:hover {
+        outline: 1.5px dashed rgba(234, 88, 12, 0.8) !important;
+        background-color: rgba(234, 88, 12, 0.05) !important;
+      }
+      .edit-mode-active img[data-edit-key] {
+        cursor: pointer;
+      }
+      .edit-mode-active img[data-edit-key]:hover {
+        opacity: 0.85;
+      }
+      .edit-mode-active a[data-edit-key] {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body class="text-charcoal font-sans selection:bg-sakura/30 selection:text-plum overflow-x-hidden relative">
+
+    <!-- ================================================================= -->
+    <!-- SECTION: PROGRESS INDICATOR (VERTICAL GUIDE LINE + MOVING DOT)  -->
+    <!-- ================================================================= -->
+    <div id="progress-indicator-container" class="fixed inset-0 pointer-events-none z-40 hidden md:block select-none">
+      <!-- Centered Thin Vertical Line -->
+      <div class="absolute left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-borderLight to-transparent transform -translate-x-1/2"></div>
+      
+      <!-- Moving Dot -->
+      <div id="reading-guide-dot-container" class="absolute left-1/2 transform -translate-x-1/2 flex items-center transition-all duration-75 ease-out" style="top: 12%;">
+        <div class="w-3 h-3 rounded-full bg-plum border-2 border-white shadow-sm ring-4 ring-sakura/30 z-50"></div>
+      </div>
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- SECTION: HERO LANDING                                            -->
+    <!-- ================================================================= -->
+    <section id="hero" class="relative w-full h-screen flex flex-col items-center justify-center bg-white overflow-hidden">
+      <!-- Decorative Watercolor Blossoms Background -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+        <!-- Top Left Sakura Branch -->
+        <svg class="absolute -top-12 -left-12 w-[350px] md:w-[600px] h-[350px] md:h-[600px] opacity-[0.07]" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M-50 -20 C100 100, 150 180, 280 220 M200 148 C250 130, 290 90, 310 40 M120 110 C150 180, 100 240, 60 280" stroke="#5A4E4D" stroke-width="4" stroke-linecap="round" />
+          <circle cx="280" cy="220" r="18" fill="#F7B7C3" opacity="0.8" />
+          <circle cx="200" cy="148" r="14" fill="#F7B7C3" opacity="0.9" />
+          <circle cx="310" cy="40" r="16" fill="#F7B7C3" opacity="0.85" />
+          <circle cx="120" cy="110" r="15" fill="#F7B7C3" opacity="0.9" />
+          <circle cx="60" cy="280" r="14" fill="#F7B7C3" opacity="0.8" />
+          <path d="M150 250 C160 290, 180 320, 200 350" stroke="#F7B7C3" stroke-width="1.5" stroke-dasharray="4 4" />
+          <path d="M280 120 C320 180, 340 220, 380 270" stroke="#F7B7C3" stroke-width="1.5" stroke-dasharray="4 4" />
+          <path d="M195 348 Q198 344, 204 350 Q200 354, 195 348 Z" fill="#F7B7C3" />
+          <path d="M375 268 Q378 264, 384 270 Q380 274, 375 268 Z" fill="#F7B7C3" />
+        </svg>
+
+        <!-- Bottom Right Plum Branch -->
+        <svg class="absolute -bottom-16 -right-16 w-[350px] md:w-[600px] h-[350px] md:h-[600px] opacity-[0.07]" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M550 520 C400 400, 350 320, 220 280 M300 352 C250 370, 210 410, 190 460 M380 390 C350 320, 400 260, 440 220" stroke="#5A4E4D" stroke-width="5" stroke-linecap="round" />
+          <circle cx="220" cy="280" r="22" fill="#C97A8D" opacity="0.85" />
+          <circle cx="300" cy="352" r="16" fill="#C97A8D" opacity="0.9" />
+          <circle cx="190" cy="460" r="18" fill="#C97A8D" opacity="0.8" />
+          <circle cx="380" cy="390" r="15" fill="#C97A8D" opacity="0.9" />
+          <circle cx="440" cy="220" r="17" fill="#C97A8D" opacity="0.8" />
+        </svg>
+      </div>
+
+      <!-- Hero Content -->
+      <div class="relative z-10 text-center px-6 max-w-4xl mx-auto flex flex-col items-center select-none">
+        <!-- Floating Red Accent Dot -->
+        <div class="w-1.5 h-1.5 rounded-full bg-plum mb-8 relative">
+          <div class="absolute -inset-2 rounded-full border border-sakura/40 animate-ping"></div>
+        </div>
+
+        <h1 data-edit-key="hero-title" class="text-5xl md:text-7xl lg:text-8xl font-serif font-light text-charcoal tracking-[0.12em] uppercase leading-none">
+          FIREFOX
+        </h1>
+
+        <div class="w-20 h-[1px] bg-plum my-6 opacity-30"></div>
+
+        <p data-edit-key="hero-subtitle" class="text-sm md:text-lg tracking-[0.4em] uppercase font-sans text-muted font-light mb-12">
+          Be the Fire.
+        </p>
+
+        <!-- Smooth Scroll Call to Action -->
+        <button onclick="document.getElementById('badge-nav').scrollIntoView({ behavior: 'smooth' })" class="group flex items-center gap-3 px-8 py-3.5 border border-borderLight rounded-full text-xs font-sans tracking-[0.25em] uppercase text-charcoal bg-white shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all duration-500 hover:bg-plum hover:border-plum hover:text-white hover:shadow-[0_10px_20px_rgba(247,183,195,0.15)] cursor-pointer outline-none">
+          View Members
+          <!-- Down Chevron Icon -->
+          <svg class="w-4 h-4 text-muted group-hover:text-white transition-colors duration-500 animate-bounce" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Centered Scroll Guide Line -->
+      <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[1px] h-20 bg-gradient-to-b from-borderLight to-transparent pointer-events-none"></div>
+    </section>
+
+
+    <!-- ================================================================= -->
+    <!-- SECTION: INTRODUCTION & TEAM STATEMENT                            -->
+    <!-- ================================================================= -->
+    <section id="intro" class="relative bg-white py-24 border-t border-borderLight overflow-hidden">
+      <div class="absolute top-1/2 left-1/4 w-96 h-96 rounded-full bg-sakura/10 blur-[100px] pointer-events-none"></div>
+
+      <div class="max-w-6xl mx-auto px-6 relative z-10">
+        <!-- Main Description -->
+        <div class="text-center max-w-3xl mx-auto mb-20 select-none reveal-on-scroll">
+          <span class="text-xs tracking-[0.25em] uppercase font-sans text-plum font-semibold block mb-4">Who We Are</span>
+          <h2 data-edit-key="intro-title" class="text-3xl md:text-5xl font-serif text-charcoal mb-8 font-light tracking-wide leading-tight">FIREFOX</h2>
+          <div class="w-12 h-[1px] bg-plum mx-auto mb-8 opacity-30"></div>
+          <p data-edit-key="intro-description" class="text-sm md:text-base font-serif italic text-muted leading-relaxed font-light">
+            "Firefox is a team of passionate Computer Science students united by the belief that growth comes through collaboration. Each member brings unique talents—from leadership and creative arts to technical expertise and international exposure—forming a balanced team driven by the motto \"Be the Fire.\" Together, they aim to inspire, innovate, and grow while supporting one another in every challenge."
+          </p>
+        </div>
+
+        <!-- Vision & Mission Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20 reveal-on-scroll">
+          <!-- Vision Card -->
+          <div class="p-8 rounded-2xl bg-gradient-to-br from-neutral-50/50 to-white border border-borderLight hover:border-sakura/40 transition-premium shadow-premium">
+            <span class="text-[10px] tracking-[0.2em] uppercase font-mono text-plum font-medium block mb-2">★ The Horizon</span>
+            <h3 class="font-serif text-xl md:text-2xl font-light text-charcoal mb-4 tracking-wider uppercase">Our Vision</h3>
+            <p data-edit-key="vision-text" class="text-xs md:text-sm font-sans text-muted leading-relaxed font-light">
+              To grow together by supporting one another, embracing challenges, and inspiring excellence through teamwork, leadership, and continuous learning.
+            </p>
+          </div>
+
+          <!-- Mission Card -->
+          <div class="p-8 rounded-2xl bg-gradient-to-br from-neutral-50/50 to-white border border-borderLight hover:border-sakura/40 transition-premium shadow-premium">
+            <span class="text-[10px] tracking-[0.2em] uppercase font-mono text-plum font-medium block mb-2">✦ The Journey</span>
+            <h3 class="font-serif text-xl md:text-2xl font-light text-charcoal mb-4 tracking-wider uppercase">Our Mission</h3>
+            <ul data-edit-key="mission-list" class="space-y-3">
+              <li class="flex items-start gap-2.5 text-xs text-muted leading-relaxed font-sans font-light">
+                <span class="w-1.5 h-1.5 rounded-full bg-plum mt-1.5 shrink-0"></span>
+                <span>Build strong collaboration and trust among members.</span>
+              </li>
+              <li class="flex items-start gap-2.5 text-xs text-muted leading-relaxed font-sans font-light">
+                <span class="w-1.5 h-1.5 rounded-full bg-plum mt-1.5 shrink-0"></span>
+                <span>Encourage leadership and responsibility.</span>
+              </li>
+              <li class="flex items-start gap-2.5 text-xs text-muted leading-relaxed font-sans font-light">
+                <span class="w-1.5 h-1.5 rounded-full bg-plum mt-1.5 shrink-0"></span>
+                <span>Use individual strengths to achieve common goals.</span>
+              </li>
+              <li class="flex items-start gap-2.5 text-xs text-muted leading-relaxed font-sans font-light">
+                <span class="w-1.5 h-1.5 rounded-full bg-plum mt-1.5 shrink-0"></span>
+                <span>Learn, innovate, and grow together.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Team Identity & Logo Meanings (Fire & Fox Symbolism) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20 reveal-on-scroll">
+          
+          <!-- Identity Card -->
+          <div class="lg:col-span-1 p-8 rounded-2xl bg-gradient-to-br from-neutral-50/50 to-white border border-borderLight hover:border-sakura/40 transition-premium shadow-premium flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] tracking-[0.2em] uppercase font-mono text-plum font-medium block mb-2">☄ Symbolism</span>
+              <h3 class="font-serif text-xl md:text-2xl font-light text-charcoal mb-4 tracking-wider uppercase">Firefox Name</h3>
+              <p data-edit-key="identity-text" class="text-xs md:text-sm font-sans text-muted leading-relaxed font-light mb-4">
+                The name Firefox represents a team that is both smart and driven, embodying:
+              </p>
+              <div class="space-y-3">
+                <div class="text-xs font-sans text-muted font-light">
+                  <strong class="text-charcoal font-semibold">Fire</strong> – Passion, determination, energy, courage, and ambition.
+                </div>
+                <div class="text-xs font-sans text-muted font-light">
+                  <strong class="text-charcoal font-semibold">Fox</strong> – Intelligence, adaptability, creativity, strategy, and teamwork.
+                </div>
+              </div>
+            </div>
+            <div class="mt-6 border-t border-borderLight pt-4">
+              <span class="text-[10px] tracking-widest font-mono text-plum uppercase font-medium block">Slogan: "Be the Fire!"</span>
+            </div>
+          </div>
+
+          <!-- Logo Meaning Card -->
+          <div class="lg:col-span-2 p-8 rounded-2xl bg-gradient-to-br from-neutral-50/50 to-white border border-borderLight hover:border-sakura/40 transition-premium shadow-premium">
+            <span class="text-[10px] tracking-[0.2em] uppercase font-mono text-plum font-medium block mb-2">🛡 Heraldry</span>
+            <h3 class="font-serif text-xl md:text-2xl font-light text-charcoal mb-4 tracking-wider uppercase">Logo Meaning</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
+              <div class="flex items-start gap-3">
+                <span class="w-2 h-2 rounded-full bg-plum mt-2 shrink-0"></span>
+                <div>
+                  <h4 class="text-xs font-sans tracking-wider uppercase text-charcoal font-semibold">Fox Head</h4>
+                  <p data-edit-key="logo-fox" class="text-[11px] font-sans text-muted leading-relaxed font-light mt-0.5">Intelligence, quick thinking, and adaptability.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="w-2 h-2 rounded-full bg-plum mt-2 shrink-0"></span>
+                <div>
+                  <h4 class="text-xs font-sans tracking-wider uppercase text-charcoal font-semibold">Circular Ring</h4>
+                  <p data-edit-key="logo-ring" class="text-[11px] font-sans text-muted leading-relaxed font-light mt-0.5">Unity, protection, and teamwork.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="w-2 h-2 rounded-full bg-plum mt-2 shrink-0"></span>
+                <div>
+                  <h4 class="text-xs font-sans tracking-wider uppercase text-charcoal font-semibold">Flames</h4>
+                  <p data-edit-key="logo-flames" class="text-[11px] font-sans text-muted leading-relaxed font-light mt-0.5">Passion, motivation, and the drive to succeed.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="w-2 h-2 rounded-full bg-plum mt-2 shrink-0"></span>
+                <div>
+                  <h4 class="text-xs font-sans tracking-wider uppercase text-charcoal font-semibold">Globe</h4>
+                  <p data-edit-key="logo-globe" class="text-[11px] font-sans text-muted leading-relaxed font-light mt-0.5">Global vision, learning without boundaries, and broad perspectives.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Common Traits & Team Values Row -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 reveal-on-scroll">
+          <!-- Common Traits Card -->
+          <div class="p-8 rounded-2xl bg-neutral-50/50 border border-borderLight hover:border-sakura/40 transition-premium shadow-premium md:col-span-1">
+            <span class="text-[10px] tracking-[0.2em] uppercase font-mono text-plum font-medium block mb-2">⚡ Common Ground</span>
+            <h3 class="font-serif text-lg font-light text-charcoal mb-4 tracking-wider uppercase">Common Traits</h3>
+            <ul data-edit-key="traits-list" class="space-y-3">
+              <li class="flex items-start gap-2.5 text-xs text-muted leading-relaxed font-sans font-light">
+                <span class="text-plum mt-0.5 text-[10px] shrink-0 font-mono">✔</span>
+                <span>Computer Science background</span>
+              </li>
+              <li class="flex items-start gap-2.5 text-xs text-muted leading-relaxed font-sans font-light">
+                <span class="text-plum mt-0.5 text-[10px] shrink-0 font-mono">✔</span>
+                <span>Travelled outside Kerala</span>
+              </li>
+              <li class="flex items-start gap-2.5 text-xs text-muted leading-relaxed font-sans font-light">
+                <span class="text-plum mt-0.5 text-[10px] shrink-0 font-mono">✔</span>
+                <span>Valid driving licence</span>
+              </li>
+              <li class="flex items-start gap-2.5 text-xs text-muted leading-relaxed font-sans font-light">
+                <span class="text-plum mt-0.5 text-[10px] shrink-0 font-mono">✔</span>
+                <span>Value teamwork and learning</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Team Values Card -->
+          <div class="p-8 rounded-2xl bg-neutral-50/50 border border-borderLight hover:border-sakura/40 transition-premium shadow-premium md:col-span-2">
+            <span class="text-[10px] tracking-[0.2em] uppercase font-mono text-plum font-medium block mb-2">⚜ Pillars</span>
+            <h3 class="font-serif text-lg font-light text-charcoal mb-4 tracking-wider uppercase">Team Values</h3>
+            <div data-edit-key="values-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+              <div class="px-3 py-2.5 rounded-lg bg-white border border-borderLight text-xs tracking-wider font-sans text-muted font-medium hover:text-plum hover:border-sakura/50 hover:shadow-sm transition-all duration-300">Leadership</div>
+              <div class="px-3 py-2.5 rounded-lg bg-white border border-borderLight text-xs tracking-wider font-sans text-muted font-medium hover:text-plum hover:border-sakura/50 hover:shadow-sm transition-all duration-300">Integrity</div>
+              <div class="px-3 py-2.5 rounded-lg bg-white border border-borderLight text-xs tracking-wider font-sans text-muted font-medium hover:text-plum hover:border-sakura/50 hover:shadow-sm transition-all duration-300">Creativity</div>
+              <div class="px-3 py-2.5 rounded-lg bg-white border border-borderLight text-xs tracking-wider font-sans text-muted font-medium hover:text-plum hover:border-sakura/50 hover:shadow-sm transition-all duration-300">Collaboration</div>
+              <div class="px-3 py-2.5 rounded-lg bg-white border border-borderLight text-xs tracking-wider font-sans text-muted font-medium hover:text-plum hover:border-sakura/50 hover:shadow-sm transition-all duration-300">Discipline</div>
+              <div class="px-3 py-2.5 rounded-lg bg-white border border-borderLight text-xs tracking-wider font-sans text-muted font-medium hover:text-plum hover:border-sakura/50 hover:shadow-sm transition-all duration-300">Adaptability</div>
+              <div class="px-3 py-2.5 rounded-lg bg-white border border-borderLight text-xs tracking-wider font-sans text-muted font-medium hover:text-plum hover:border-sakura/50 hover:shadow-sm transition-all duration-300">Respect</div>
+              <div class="px-3 py-2.5 rounded-lg bg-white border border-borderLight text-xs tracking-wider font-sans text-muted font-medium hover:text-plum hover:border-sakura/50 hover:shadow-sm transition-all duration-300">Continuous Growth</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================= -->
+    <!-- SECTION: TEAM MEMBERS                                             -->
+    <!-- ================================================================= -->
+    <div id="team-profiles">
+
+      <!-- ========================================== -->
+      <!-- MEMBER 1: NITHYA R NAIR (CAPTAIN)          -->
+      <!-- ========================================== -->
+      <section id="nithya" class="relative min-h-screen flex items-center justify-center bg-white py-24 px-6 overflow-hidden border-t border-borderLight">
+        <!-- Low opacity background plum floral composition -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+          <svg class="absolute bottom-8 right-4 w-[280px] md:w-[450px] h-[280px] md:h-[450px] opacity-[0.06]" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M420 410 C320 340, 280 280, 160 250 M260 300 C220 320, 190 350, 170 390" stroke="#5A4E4D" stroke-width="3" stroke-linecap="round" />
+            <g transform="translate(160, 250)">
+              <circle cx="0" cy="0" r="16" fill="#C97A8D" />
+              <circle cx="-10" cy="-4" r="11" fill="#C97A8D" opacity="0.95" />
+              <circle cx="10" cy="-4" r="11" fill="#C97A8D" opacity="0.95" />
+              <circle cx="0" cy="10" r="11" fill="#C97A8D" opacity="0.95" />
+              <circle cx="0" cy="-10" r="11" fill="#C97A8D" opacity="0.95" />
+              <circle cx="0" cy="0" r="5" fill="#EAD1D5" opacity="0.8" />
+            </g>
+          </svg>
+        </div>
+
+        <div class="max-w-4xl mx-auto w-full relative z-10 select-none">
+          <div class="text-center mb-12">
+            <span class="text-xs tracking-[0.3em] uppercase font-sans text-plum font-medium block">★ Team Captain</span>
+          </div>
+
+          <div class="flex flex-col items-center text-center reveal-on-scroll">
+            <!-- Large Premium Portrait Frame -->
+            <div class="relative w-64 h-80 md:w-80 md:h-[400px] rounded-xl overflow-hidden mb-12 border-2 border-borderLight shadow-[0_10px_40px_rgba(0,0,0,0.03)] hover:border-sakura hover:shadow-[0_15px_30px_rgba(247,183,195,0.18)] transition-all duration-500 group cursor-pointer">
+              <div class="absolute inset-0 bg-sakura/5 mix-blend-color-burn z-10 pointer-events-none transition-all duration-500 group-hover:bg-transparent"></div>
+              <img data-edit-key="nithya-photo" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop" alt="Nithya R Nair" class="w-full h-full object-cover grayscale-[15%] group-hover:grayscale-0 group-hover:scale-[1.03] group-hover:brightness-105 transition-all duration-700 ease-out">
+            </div>
+
+            <!-- Member Identity -->
+            <div class="mb-6">
+              <h2 data-edit-key="nithya-name" class="font-serif text-3xl md:text-5xl font-light text-charcoal tracking-[0.10em] uppercase mb-2">NITHYA R NAIR</h2>
+              <p data-edit-key="nithya-role" class="text-sm tracking-[0.25em] text-muted uppercase font-sans">&ldquo;Nithya&rdquo; &bull; Captain (C) &bull; MCA Scholar</p>
+              <p data-edit-key="nithya-mobile" class="text-xs tracking-[0.15em] text-plum uppercase font-mono mt-3">Mobile: +91 95671 92956</p>
+            </div>
+
+            <!-- Biography -->
+            <p data-edit-key="nithya-bio" class="text-sm md:text-base font-sans text-muted max-w-2xl leading-relaxed mb-8 font-light">
+              Nithya is a natural leader who guides the team with academic rigor and artistic poise. Pursuing her Master of Computer Applications (MCA), she balances her strong technical focus with her passion for classical dance, weaving coordination, precision, and expressiveness into every aspect of her captaincy.
+            </p>
+
+            <!-- Favorite Quote with Premium Callout -->
+            <div class="max-w-xl mx-auto border-l border-sakura pl-6 py-2 text-left mb-10 bg-gradient-to-r from-neutral-50/40 to-transparent pr-4">
+              <p class="text-xs tracking-[0.1em] uppercase font-sans text-plum font-medium mb-1">Personal Philosophy</p>
+              <p data-edit-key="nithya-quote" class="font-serif italic text-sm md:text-base text-charcoal leading-relaxed font-light">
+                &ldquo;Leadership is like a classical dance; it requires absolute balance, dedicated practice, and the grace to coordinate every movement in harmony.&rdquo;
+              </p>
+            </div>
+
+            <!-- Stewardship List (Why We Choose Her) -->
+            <div class="w-full max-w-xl border-t border-b border-borderLight py-6 mb-12 text-left select-none">
+              <span class="text-[10px] tracking-[0.2em] uppercase font-sans text-muted block mb-4 text-center">Why we choose her</span>
+              <ul data-edit-key="nithya-choose" class="space-y-3.5">
+                <li class="flex items-start gap-3.5 text-xs text-muted leading-relaxed font-sans">
+                  <span class="w-1.5 h-1.5 rounded-full bg-plum mt-1.5 shrink-0"></span>
+                  <span>Her exceptional coordination skills, maintaining perfect synchronization and warmth across the cohort.</span>
+                </li>
+                <li class="flex items-start gap-3.5 text-xs text-muted leading-relaxed font-sans">
+                  <span class="w-1.5 h-1.5 rounded-full bg-plum mt-1.5 shrink-0"></span>
+                  <span>Bringing the rigorous, structured thinking of an MCA computer applications scholar to core project management.</span>
+                </li>
+                <li class="flex items-start gap-3.5 text-xs text-muted leading-relaxed font-sans">
+                  <span class="w-1.5 h-1.5 rounded-full bg-plum mt-1.5 shrink-0"></span>
+                  <span>Her creative background as a classical dancer, inspiring others to express themselves with balance and discipline.</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- LinkedIn External Link -->
+            <a data-edit-key="nithya-linkedin" href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-2.5 px-6 py-3 border border-borderLight rounded-full text-[10px] font-sans tracking-[0.25em] uppercase text-charcoal bg-white shadow-sm transition-all duration-500 hover:bg-charcoal hover:border-charcoal hover:text-white hover:shadow-md cursor-pointer outline-none">
+              <svg class="w-3.5 h-3.5 text-plum group-hover:text-white transition-colors duration-500" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              </svg>
+              Connect Professional
+              <svg class="w-3.5 h-3.5 text-muted group-hover:text-white transition-colors duration-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="absolute bottom-0 left-10 right-10 h-[1px] bg-gradient-to-r from-transparent via-borderLight to-transparent"></div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- MEMBER 2: ATHUL JOHN JOSEPH (VICE CAPTAIN) -->
+      <!-- ========================================== -->
+      <section id="athul" class="relative min-h-screen flex items-center justify-center bg-white py-24 px-6 overflow-hidden border-t border-borderLight">
+        <!-- Low opacity background sakura blossom floral composition -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+          <svg class="absolute top-8 left-4 w-[280px] md:w-[450px] h-[280px] md:h-[450px] opacity-[0.06]" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M-20 -10 C80 60, 120 120, 240 150 M140 100 C180 80, 210 50, 230 10" stroke="#5A4E4D" stroke-width="3" stroke-linecap="round" />
+            <g transform="translate(240, 150)">
+              <circle cx="0" cy="0" r="14" fill="#F7B7C3" />
+              <circle cx="-8" cy="-8" r="12" fill="#F7B7C3" opacity="0.9" />
+              <circle cx="8" cy="-8" r="12" fill="#F7B7C3" opacity="0.9" />
+              <circle cx="-8" cy="8" r="12" fill="#F7B7C3" opacity="0.9" />
+              <circle cx="8" cy="8" r="12" fill="#F7B7C3" opacity="0.9" />
+              <circle cx="0" cy="0" r="4" fill="#FFFFFF" opacity="0.6" />
+            </g>
+          </svg>
+        </div>
+
+        <div class="max-w-4xl mx-auto w-full relative z-10 select-none">
+          <div class="text-center mb-12">
+            <span class="text-xs tracking-[0.3em] uppercase font-sans text-plum font-medium block">✦ Second in Command</span>
+          </div>
+
+          <div class="flex flex-col items-center text-center reveal-on-scroll">
+            <!-- Large Premium Portrait Frame -->
+            <div class="relative w-64 h-80 md:w-80 md:h-[400px] rounded-xl overflow-hidden mb-12 border-2 border-borderLight shadow-[0_10px_40px_rgba(0,0,0,0.03)] hover:border-sakura hover:shadow-[0_15px_30px_rgba(247,183,195,0.18)] transition-all duration-500 group cursor-pointer">
+              <div class="absolute inset-0 bg-sakura/5 mix-blend-color-burn z-10 pointer-events-none transition-all duration-500 group-hover:bg-transparent"></div>
+              <img data-edit-key="athul-photo" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop" alt="Athul John Joseph" class="w-full h-full object-cover grayscale-[15%] group-hover:grayscale-0 group-hover:scale-[1.03] group-hover:brightness-105 transition-all duration-700 ease-out">
+            </div>
+
+            <!-- Member Identity -->
+            <div class="mb-6">
+              <h2 data-edit-key="athul-name" class="font-serif text-3xl md:text-5xl font-light text-charcoal tracking-[0.10em] uppercase mb-2">ATHUL JOHN JOSEPH</h2>
+              <p data-edit-key="athul-role" class="text-sm tracking-[0.25em] text-muted uppercase font-sans">&ldquo;Athul&rdquo; &bull; Vice Captain (VC) &bull; MSc Scholar</p>
+              <p data-edit-key="athul-mobile" class="text-xs tracking-[0.15em] text-plum uppercase font-mono mt-3">Mobile: +91 83173 99716</p>
+            </div>
+
+            <!-- Biography -->
+            <p data-edit-key="athul-bio" class="text-sm md:text-base font-sans text-muted max-w-2xl leading-relaxed mb-8 font-light">
+              Athul is a highly disciplined leader and Rajya Puraskar Awardee who brings honor, focus, and strategic clarity to the cohort. Pursuing his Master of Science (MSc), he commands respect with his systemic approach, fostering an open, collaborative development environment built on mutual trust and absolute transparency.
+            </p>
+
+            <!-- Favorite Quote -->
+            <div class="max-w-xl mx-auto border-l border-sakura pl-6 py-2 text-left mb-10 bg-gradient-to-r from-neutral-50/40 to-transparent pr-4">
+              <p class="text-xs tracking-[0.1em] uppercase font-sans text-plum font-medium mb-1">Personal Philosophy</p>
+              <p data-edit-key="athul-quote" class="font-serif italic text-sm md:text-base text-charcoal leading-relaxed font-light">
+                &ldquo;Simplicity is the ultimate sophistication. True leadership lies in finding the most direct and honest solution to the most complex of challenges.&rdquo;
+              </p>
+            </div>
+
+            <!-- Stewardship List (Why We Choose Him) -->
+            <div class="w-full max-w-xl border-t border-b border-borderLight py-6 mb-12 text-left select-none">
+              <span class="text-[10px] tracking-[0.2em] uppercase font-sans text-muted block mb-4 text-center">Why we choose him</span>
+              <ul data-edit-key="athul-choose" class="space-y-3.5">
+                <li class="flex items-start gap-3.5 text-xs text-muted leading-relaxed font-sans">
+                  <span class="w-1.5 h-1.5 rounded-full bg-plum mt-1.5 shrink-0"></span>
+                  <span>A Rajya Puraskar Awardee who brings prestigious state-level excellence and supreme commitment to the cohort.</span>
+                </li>
+                <li class="flex items-start gap-3.5 text-xs text-muted leading-relaxed font-sans">
+                  <span class="w-1.5 h-1.5 rounded-full bg-plum mt-1.5 shrink-0"></span>
+                  <span>Exceptional analytical depth, applying the advanced investigative methods of an MSc scholar to systems design.</span>
+                </li>
+                <li class="flex items-start gap-3.5 text-xs text-muted leading-relaxed font-sans">
+                  <span class="w-1.5 h-1.5 rounded-full bg-plum mt-1.5 shrink-0"></span>
+                  <span>A natural talent for keeping the team grounded, inspired, and aligned under a unified and cohesive technical vision.</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- LinkedIn External Link -->
+            <a data-edit-key="athul-linkedin" href="https://linkedin.com/in/athul-john-joseph" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-2.5 px-6 py-3 border border-borderLight rounded-full text-[10px] font-sans tracking-[0.25em] uppercase text-charcoal bg-white shadow-sm transition-all duration-500 hover:bg-charcoal hover:border-charcoal hover:text-white hover:shadow-md cursor-pointer outline-none">
+              <svg class="w-3.5 h-3.5 text-plum group-hover:text-white transition-colors duration-500" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              </svg>
+              Connect Professional
+              <svg class="w-3.5 h-3.5 text-muted group-hover:text-white transition-colors duration-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="absolute bottom-0 left-10 right-10 h-[1px] bg-gradient-to-r from-transparent via-borderLight to-transparent"></div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- MEMBER 3: LILY ELIZABETH (PORTRAIT LEFT)   -->
+      <!-- ========================================== -->
+      <section id="lily" class="relative min-h-screen flex items-center justify-center bg-white py-24 px-6 overflow-hidden border-t border-borderLight">
+        <!-- Low opacity background sakura drift floral composition -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+          <svg class="absolute top-10 right-10 w-[300px] h-[300px] opacity-[0.06]" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 30,50 C 40,30 60,35 60,55 C 60,75 40,70 30,50 Z" fill="#F7B7C3" transform="rotate(15, 45, 55)" />
+            <path d="M 120,80 C 130,60 150,65 150,85 C 150,105 130,100 120,80 Z" fill="#F7B7C3" transform="rotate(45, 135, 85)" />
+            <path d="M 80,140 C 90,120 110,125 110,145 C 110,165 90,160 80,140 Z" fill="#F7B7C3" transform="rotate(-30, 95, 145)" />
+          </svg>
+        </div>
+
+        <div class="max-w-5xl mx-auto w-full relative z-10 select-none">
+          <div class="flex flex-col md:flex-row items-center gap-12 lg:gap-20 reveal-on-scroll">
+            <!-- Portrait Column (Left) -->
+            <div class="w-full md:w-1/2 flex justify-center">
+              <div class="relative w-52 h-64 md:w-64 md:h-80 lg:w-72 lg:h-[360px] rounded-xl overflow-hidden border-2 border-borderLight shadow-sm hover:border-sakura hover:shadow-[0_12px_28px_rgba(247,183,195,0.15)] transition-all duration-500 group cursor-pointer">
+                <div class="absolute inset-0 bg-sakura/5 mix-blend-color-burn z-10 pointer-events-none transition-all duration-500 group-hover:bg-transparent"></div>
+                <img data-edit-key="lily-photo" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop" alt="Lily Elizabeth" class="w-full h-full object-cover grayscale-[15%] group-hover:grayscale-0 group-hover:scale-[1.03] group-hover:brightness-105 transition-all duration-700 ease-out">
+              </div>
+            </div>
+
+            <!-- Information Column (Right) -->
+            <div class="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
+              <div class="mb-4">
+                <span data-edit-key="lily-tagline" class="text-[10px] tracking-[0.2em] uppercase font-sans text-muted block mb-2 font-medium">Computer Applications & Martial Arts</span>
+                <h3 data-edit-key="lily-name" class="font-serif text-2xl md:text-3xl lg:text-4xl font-light text-charcoal tracking-[0.08em] uppercase">LILY ELIZABETH</h3>
+              </div>
+
+              <div class="mb-6 flex flex-col md:flex-row items-center gap-2">
+                <span data-edit-key="lily-nickname" class="text-xs font-serif italic text-plum font-normal">&ldquo;Lily&rdquo;</span>
+                <span class="hidden md:inline text-borderLight">&bull;</span>
+                <span data-edit-key="lily-role" class="text-xs tracking-wider uppercase font-sans text-muted font-medium">MCA Student &bull; Karate Practitioner</span>
+              </div>
+
+              <p data-edit-key="lily-bio" class="text-xs md:text-sm font-sans text-muted leading-relaxed mb-6 font-light max-w-md">
+                Lily infuses the cohort with the focused intensity, mental stamina, and agility of a martial artist. She approaches computer applications and complex algorithmic challenges with the exact same discipline and execution required on the dojo floor.
+              </p>
+              
+              <p data-edit-key="lily-mobile" class="text-xs tracking-[0.12em] text-plum uppercase font-mono mb-4">Mobile: +91 94470 28683</p>
+
+              <div class="border-l-2 border-sakura pl-4 py-1.5 mb-8 text-left max-w-md bg-neutral-50/30">
+                <p data-edit-key="lily-quote" class="font-serif italic text-xs md:text-sm text-charcoal leading-relaxed font-light">
+                  &ldquo;In code, as in Karate, true power does not come from force, but from balance, breathing, and perfect focus on the core fundamentals.&rdquo;
+                </p>
+              </div>
+
+              <a data-edit-key="lily-linkedin" href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-2 px-5 py-2.5 border border-borderLight rounded-full text-[9px] font-sans tracking-[0.25em] uppercase text-charcoal bg-white shadow-sm transition-all duration-500 hover:bg-charcoal hover:border-charcoal hover:text-white hover:shadow-md cursor-pointer outline-none">
+                <svg class="w-3 h-3 text-plum group-hover:text-white transition-colors duration-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                </svg>
+                Professional Link
+                <svg class="w-3 h-3 text-muted group-hover:text-white transition-colors duration-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="absolute bottom-0 left-10 right-10 h-[1px] bg-gradient-to-r from-transparent via-borderLight to-transparent"></div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- MEMBER 4: SANGEETH M (PORTRAIT RIGHT)      -->
+      <!-- ========================================== -->
+      <section id="sangeeth" class="relative min-h-screen flex items-center justify-center bg-white py-24 px-6 overflow-hidden border-t border-borderLight">
+        <!-- Low opacity background plum mist watercolor wash -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+          <div class="absolute top-1/4 left-10 w-48 h-48 rounded-full bg-[#C97A8D] blur-[80px] opacity-[0.05]"></div>
+          <svg class="absolute top-1/4 left-12 w-[250px] h-[250px] opacity-[0.05]" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M-10 100 Q 50 80, 120 130 T 210 110" stroke="#5A4E4D" stroke-width="2.5" />
+            <circle cx="120" cy="130" r="10" fill="#C97A8D" />
+            <circle cx="50" cy="80" r="8" fill="#C97A8D" />
+          </svg>
+        </div>
+
+        <div class="max-w-5xl mx-auto w-full relative z-10 select-none">
+          <div class="flex flex-col md:flex-row-reverse items-center gap-12 lg:gap-20 reveal-on-scroll">
+            <!-- Portrait Column (Right) -->
+            <div class="w-full md:w-1/2 flex justify-center">
+              <div class="relative w-52 h-64 md:w-64 md:h-80 lg:w-72 lg:h-[360px] rounded-xl overflow-hidden border-2 border-borderLight shadow-sm hover:border-sakura hover:shadow-[0_12px_28px_rgba(247,183,195,0.15)] transition-all duration-500 group cursor-pointer">
+                <div class="absolute inset-0 bg-sakura/5 mix-blend-color-burn z-10 pointer-events-none transition-all duration-500 group-hover:bg-transparent"></div>
+                <img data-edit-key="sangeeth-photo" src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=600&auto=format&fit=crop" alt="Sangeeth M" class="w-full h-full object-cover grayscale-[15%] group-hover:grayscale-0 group-hover:scale-[1.03] group-hover:brightness-105 transition-all duration-700 ease-out">
+              </div>
+            </div>
+
+            <!-- Information Column (Left) -->
+            <div class="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
+              <div class="mb-4">
+                <span data-edit-key="sangeeth-tagline" class="text-[10px] tracking-[0.2em] uppercase font-sans text-muted block mb-2 font-medium">Science & Visual storytelling</span>
+                <h3 data-edit-key="sangeeth-name" class="font-serif text-2xl md:text-3xl lg:text-4xl font-light text-charcoal tracking-[0.08em] uppercase">SANGEETH M</h3>
+              </div>
+
+              <div class="mb-6 flex flex-col md:flex-row items-center gap-2">
+                <span data-edit-key="sangeeth-nickname" class="text-xs font-serif italic text-plum font-normal">&ldquo;Sangeeth&rdquo;</span>
+                <span class="hidden md:inline text-borderLight">&bull;</span>
+                <span data-edit-key="sangeeth-role" class="text-xs tracking-wider uppercase font-sans text-muted font-medium">MSc Scholar &bull; Lead Video Editor</span>
+              </div>
+
+              <p data-edit-key="sangeeth-bio" class="text-xs md:text-sm font-sans text-muted leading-relaxed mb-6 font-light max-w-md">
+                Sangeeth frames our cohort's vision through the lens of a video storyteller. Bringing advanced investigative clarity from his MSc background, he shapes dynamic edits and crafts a rhythmic flow that brings our narratives to life.
+              </p>
+              
+              <p data-edit-key="sangeeth-mobile" class="text-xs tracking-[0.12em] text-plum uppercase font-mono mb-4">Mobile: +91 91880 78475</p>
+
+              <div class="border-l-2 border-sakura pl-4 py-1.5 mb-8 text-left max-w-md bg-neutral-50/30">
+                <p data-edit-key="sangeeth-quote" class="font-serif italic text-xs md:text-sm text-charcoal leading-relaxed font-light">
+                  &ldquo;A perfect edit is like science: it is the seamless alignment of time, tone, and composition until the cut itself disappears and only the feeling remains.&rdquo;
+                </p>
+              </div>
+
+              <a data-edit-key="sangeeth-linkedin" href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-2 px-5 py-2.5 border border-borderLight rounded-full text-[9px] font-sans tracking-[0.25em] uppercase text-charcoal bg-white shadow-sm transition-all duration-500 hover:bg-charcoal hover:border-charcoal hover:text-white hover:shadow-md cursor-pointer outline-none">
+                <svg class="w-3 h-3 text-plum group-hover:text-white transition-colors duration-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                </svg>
+                Professional Link
+                <svg class="w-3 h-3 text-muted group-hover:text-white transition-colors duration-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="absolute bottom-0 left-10 right-10 h-[1px] bg-gradient-to-r from-transparent via-borderLight to-transparent"></div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- MEMBER 5: SHARON SHABU (PORTRAIT LEFT)     -->
+      <!-- ========================================== -->
+      <section id="sharon" class="relative min-h-screen flex items-center justify-center bg-white py-24 px-6 overflow-hidden border-t border-borderLight">
+        <!-- Low opacity background minimal twig floral composition -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+          <svg class="absolute top-4 right-4 w-[250px] md:w-[350px] h-[200px] md:h-[300px] opacity-[0.06]" viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M320 -20 C 250 40, 180 30, 100 60" stroke="#5A4E4D" stroke-width="2" stroke-linecap="round" />
+            <circle cx="180" cy="30" r="6" fill="#F7B7C3" />
+            <circle cx="100" cy="60" r="5" fill="#F7B7C3" />
+            <circle cx="220" cy="25" r="7" fill="#C97A8D" />
+          </svg>
+        </div>
+
+        <div class="max-w-5xl mx-auto w-full relative z-10 select-none">
+          <div class="flex flex-col md:flex-row items-center gap-12 lg:gap-20 reveal-on-scroll">
+            <!-- Portrait Column (Left) -->
+            <div class="w-full md:w-1/2 flex justify-center">
+              <div class="relative w-52 h-64 md:w-64 md:h-80 lg:w-72 lg:h-[360px] rounded-xl overflow-hidden border-2 border-borderLight shadow-sm hover:border-sakura hover:shadow-[0_12px_28px_rgba(247,183,195,0.15)] transition-all duration-500 group cursor-pointer">
+                <div class="absolute inset-0 bg-sakura/5 mix-blend-color-burn z-10 pointer-events-none transition-all duration-500 group-hover:bg-transparent"></div>
+                <img data-edit-key="sharon-photo" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600&auto=format&fit=crop" alt="Sharon Shabu" class="w-full h-full object-cover grayscale-[15%] group-hover:grayscale-0 group-hover:scale-[1.03] group-hover:brightness-105 transition-all duration-700 ease-out">
+              </div>
+            </div>
+
+            <!-- Information Column (Right) -->
+            <div class="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
+              <div class="mb-4">
+                <span data-edit-key="sharon-tagline" class="text-[10px] tracking-[0.2em] uppercase font-sans text-muted block mb-2 font-medium">Computer Applications & Dedication</span>
+                <h3 data-edit-key="sharon-name" class="font-serif text-2xl md:text-3xl lg:text-4xl font-light text-charcoal tracking-[0.08em] uppercase">SHARON SHABU</h3>
+              </div>
+
+              <div class="mb-6 flex flex-col md:flex-row items-center gap-2">
+                <span data-edit-key="sharon-nickname" class="text-xs font-serif italic text-plum font-normal">&ldquo;Sharon&rdquo;</span>
+                <span class="hidden md:inline text-borderLight">&bull;</span>
+                <span data-edit-key="sharon-role" class="text-xs tracking-wider uppercase font-sans text-muted font-medium">MCA Student &bull; Dedicated Multitasker</span>
+              </div>
+
+              <p data-edit-key="sharon-bio" class="text-xs md:text-sm font-sans text-muted leading-relaxed mb-6 font-light max-w-md">
+                Sharon embodies dedication, flawlessly balancing her MCA academic studies with a part-time working schedule. This incredible multitasking capacity makes her highly structured, resourceful, and capable of delivering solutions under any pressure.
+              </p>
+              
+              <p data-edit-key="sharon-mobile" class="text-xs tracking-[0.12em] text-plum uppercase font-mono mb-4">Mobile: +91 96455 93939</p>
+
+              <div class="border-l-2 border-sakura pl-4 py-1.5 mb-8 text-left max-w-md bg-neutral-50/30">
+                <p data-edit-key="sharon-quote" class="font-serif italic text-xs md:text-sm text-charcoal leading-relaxed font-light">
+                  &ldquo;Balancing work and study teaches you the true value of time. Precision in organization is what enables us to scale and grow sustainably.&rdquo;
+                </p>
+              </div>
+
+              <a data-edit-key="sharon-linkedin" href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-2 px-5 py-2.5 border border-borderLight rounded-full text-[9px] font-sans tracking-[0.25em] uppercase text-charcoal bg-white shadow-sm transition-all duration-500 hover:bg-charcoal hover:border-charcoal hover:text-white hover:shadow-md cursor-pointer outline-none">
+                <svg class="w-3 h-3 text-plum group-hover:text-white transition-colors duration-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                </svg>
+                Professional Link
+                <svg class="w-3 h-3 text-muted group-hover:text-white transition-colors duration-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="absolute bottom-0 left-10 right-10 h-[1px] bg-gradient-to-r from-transparent via-borderLight to-transparent"></div>
+      </section>ransparent"></div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- MEMBER 6: AJITH E JOEMON (PORTRAIT RIGHT)  -->
+      <!-- ========================================== -->
+      <section id="ajith" class="relative min-h-screen flex items-center justify-center bg-white py-24 px-6 overflow-hidden border-t border-borderLight">
+        <!-- Low opacity background gentle cascade floral composition -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+          <svg class="absolute top-0 bottom-0 left-0 w-[120px] h-full opacity-[0.05]" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 20,100 C 25,90 35,92 35,102 C 35,112 25,110 20,100 Z" fill="#F7B7C3" transform="rotate(10, 27, 101)" />
+            <path d="M 50,300 C 55,290 65,292 65,302 C 65,312 55,310 50,300 Z" fill="#C97A8D" transform="rotate(-15, 57, 301)" />
+            <path d="M 30,500 C 35,490 45,492 45,502 C 45,512 35,510 30,500 Z" fill="#F7B7C3" transform="rotate(40, 37, 501)" />
+            <path d="M 60,700 C 65,690 75,692 75,702 C 75,712 65,710 60,700 Z" fill="#C97A8D" transform="rotate(-5, 67, 701)" />
+          </svg>
+        </div>
+
+        <div class="max-w-5xl mx-auto w-full relative z-10 select-none">
+          <div class="flex flex-col md:flex-row-reverse items-center gap-12 lg:gap-20 reveal-on-scroll">
+            <!-- Portrait Column (Right) -->
+            <div class="w-full md:w-1/2 flex justify-center">
+              <div class="relative w-52 h-64 md:w-64 md:h-80 lg:w-72 lg:h-[360px] rounded-xl overflow-hidden border-2 border-borderLight shadow-sm hover:border-sakura hover:shadow-[0_12px_28px_rgba(247,183,195,0.15)] transition-all duration-500 group cursor-pointer">
+                <div class="absolute inset-0 bg-sakura/5 mix-blend-color-burn z-10 pointer-events-none transition-all duration-500 group-hover:bg-transparent"></div>
+                <img data-edit-key="ajith-photo" src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=600&auto=format&fit=crop" alt="Ajith E Joemon" class="w-full h-full object-cover grayscale-[15%] group-hover:grayscale-0 group-hover:scale-[1.03] group-hover:brightness-105 transition-all duration-700 ease-out">
+              </div>
+            </div>
+
+            <!-- Information Column (Left) -->
+            <div class="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
+              <div class="mb-4">
+                <span data-edit-key="ajith-tagline" class="text-[10px] tracking-[0.2em] uppercase font-sans text-muted block mb-2 font-medium">Science & Rhythmic Energy</span>
+                <h3 data-edit-key="ajith-name" class="font-serif text-2xl md:text-3xl lg:text-4xl font-light text-charcoal tracking-[0.08em] uppercase">AJITH E JOEMON</h3>
+              </div>
+
+              <div class="mb-6 flex flex-col md:flex-row items-center gap-2">
+                <span data-edit-key="ajith-nickname" class="text-xs font-serif italic text-plum font-normal">&ldquo;Ajith&rdquo;</span>
+                <span class="hidden md:inline text-borderLight">&bull;</span>
+                <span data-edit-key="ajith-role" class="text-xs tracking-wider uppercase font-sans text-muted font-medium">MSc Scholar &bull; Lead Drummer</span>
+              </div>
+
+              <p data-edit-key="ajith-bio" class="text-xs md:text-sm font-sans text-muted leading-relaxed mb-6 font-light max-w-md">
+                Ajith brings energy and rhythm to the cohort. An MSc scholar who studies structural systems, he is also a passionate drummer, using tempo, syncopation, and perfect timing to keep the team moving forward with momentum and passion.
+              </p>
+              
+              <p data-edit-key="ajith-mobile" class="text-xs tracking-[0.12em] text-plum uppercase font-mono mb-4">Mobile: +91 88481 69981</p>
+
+              <div class="border-l-2 border-sakura pl-4 py-1.5 mb-8 text-left max-w-md bg-neutral-50/30">
+                <p data-edit-key="ajith-quote" class="font-serif italic text-xs md:text-sm text-charcoal leading-relaxed font-light">
+                  &ldquo;A team needs a heartbeat. Drums teach you that finding the right tempo and staying locked in the groove is what transforms noise into a powerful symphony.&rdquo;
+                </p>
+              </div>
+
+              <a data-edit-key="ajith-linkedin" href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-2 px-5 py-2.5 border border-borderLight rounded-full text-[9px] font-sans tracking-[0.25em] uppercase text-charcoal bg-white shadow-sm transition-all duration-500 hover:bg-charcoal hover:border-charcoal hover:text-white hover:shadow-md cursor-pointer outline-none">
+                <svg class="w-3 h-3 text-plum group-hover:text-white transition-colors duration-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                </svg>
+                Professional Link
+                <svg class="w-3 h-3 text-muted group-hover:text-white transition-colors duration-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="absolute bottom-0 left-10 right-10 h-[1px] bg-gradient-to-r from-transparent via-borderLight to-transparent"></div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- MEMBER 7: R. LAKSHMI (PORTRAIT LEFT)       -->
+      <!-- ========================================== -->
+      <section id="lakshmi" class="relative min-h-screen flex items-center justify-center bg-white py-24 px-6 overflow-hidden border-t border-borderLight">
+        <!-- Low opacity background soft wash watercolor composition -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+          <div class="absolute bottom-12 left-10 w-64 h-64 rounded-full bg-[#F7B7C3] blur-[100px] opacity-[0.05]"></div>
+          <div class="absolute bottom-4 right-12 w-64 h-64 rounded-full bg-[#C97A8D] blur-[120px] opacity-[0.04]"></div>
+        </div>
+
+        <div class="max-w-5xl mx-auto w-full relative z-10 select-none">
+          <div class="flex flex-col md:flex-row items-center gap-12 lg:gap-20 reveal-on-scroll">
+            <!-- Portrait Column (Left) -->
+            <div class="w-full md:w-1/2 flex justify-center">
+              <div class="relative w-52 h-64 md:w-64 md:h-80 lg:w-72 lg:h-[360px] rounded-xl overflow-hidden border-2 border-borderLight shadow-sm hover:border-sakura hover:shadow-[0_12px_28px_rgba(247,183,195,0.15)] transition-all duration-500 group cursor-pointer">
+                <div class="absolute inset-0 bg-sakura/5 mix-blend-color-burn z-10 pointer-events-none transition-all duration-500 group-hover:bg-transparent"></div>
+                <img data-edit-key="lakshmi-photo" src="https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?q=80&w=600&auto=format&fit=crop" alt="R. Lakshmi" class="w-full h-full object-cover grayscale-[15%] group-hover:grayscale-0 group-hover:scale-[1.03] group-hover:brightness-105 transition-all duration-700 ease-out">
+              </div>
+            </div>
+
+            <!-- Information Column (Right) -->
+            <div class="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
+              <div class="mb-4">
+                <span data-edit-key="lakshmi-tagline" class="text-[10px] tracking-[0.2em] uppercase font-sans text-muted block mb-2 font-medium">Computer Applications & Leadership</span>
+                <h3 data-edit-key="lakshmi-name" class="font-serif text-2xl md:text-3xl lg:text-4xl font-light text-charcoal tracking-[0.08em] uppercase">R. LAKSHMI</h3>
+              </div>
+
+              <div class="mb-6 flex flex-col md:flex-row items-center gap-2">
+                <span data-edit-key="lakshmi-nickname" class="text-xs font-serif italic text-plum font-normal">&ldquo;Lakshmi&rdquo;</span>
+                <span class="hidden md:inline text-borderLight">&bull;</span>
+                <span data-edit-key="lakshmi-role" class="text-xs tracking-wider uppercase font-sans text-muted font-medium">MCA Student &bull; Former School Captain</span>
+              </div>
+
+              <p data-edit-key="lakshmi-bio" class="text-xs md:text-sm font-sans text-muted leading-relaxed mb-6 font-light max-w-md">
+                Lakshmi brings a proven track record of student command and structured alignment. As a former School Captain currently pursuing her MCA, she excels in organizational management, ensuring the team stays on task and focused.
+              </p>
+              
+              <p data-edit-key="lakshmi-mobile" class="text-xs tracking-[0.12em] text-plum uppercase font-mono mb-4">Mobile: +91 70129 75722</p>
+
+              <div class="border-l-2 border-sakura pl-4 py-1.5 mb-8 text-left max-w-md bg-neutral-50/30">
+                <p data-edit-key="lakshmi-quote" class="font-serif italic text-xs md:text-sm text-charcoal leading-relaxed font-light">
+                  &ldquo;A true captain does not just direct; they serve as the glue that bonds the team's skills together. Order and structure build beautiful results.&rdquo;
+                </p>
+              </div>
+
+              <a data-edit-key="lakshmi-linkedin" href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-2 px-5 py-2.5 border border-borderLight rounded-full text-[9px] font-sans tracking-[0.25em] uppercase text-charcoal bg-white shadow-sm transition-all duration-500 hover:bg-charcoal hover:border-charcoal hover:text-white hover:shadow-md cursor-pointer outline-none">
+                <svg class="w-3 h-3 text-plum group-hover:text-white transition-colors duration-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                </svg>
+                Professional Link
+                <svg class="w-3 h-3 text-muted group-hover:text-white transition-colors duration-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="absolute bottom-0 left-10 right-10 h-[1px] bg-gradient-to-r from-transparent via-borderLight to-transparent"></div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- MEMBER 8: AKSA SAM (PORTRAIT RIGHT)        -->
+      <!-- ========================================== -->
+      <section id="aksa" class="relative min-h-screen flex items-center justify-center bg-white py-24 px-6 overflow-hidden border-t border-borderLight">
+        <!-- Low opacity background zen ring enso circle floral composition -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+          <svg class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] md:w-[500px] h-[350px] md:h-[500px] opacity-[0.04]" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 160,100 A 60,60 0 1,1 150,70" stroke="#C97A8D" stroke-width="7" stroke-linecap="round" stroke-dasharray="300" stroke-dashoffset="10" opacity="0.6" />
+            <path d="M 160,100 A 60,60 0 1,1 150,70" stroke="#F7B7C3" stroke-width="3" stroke-linecap="round" opacity="0.4" />
+          </svg>
+        </div>
+
+        <div class="max-w-5xl mx-auto w-full relative z-10 select-none">
+          <div class="flex flex-col md:flex-row-reverse items-center gap-12 lg:gap-20 reveal-on-scroll">
+            <!-- Portrait Column (Right) -->
+            <div class="w-full md:w-1/2 flex justify-center">
+              <div class="relative w-52 h-64 md:w-64 md:h-80 lg:w-72 lg:h-[360px] rounded-xl overflow-hidden border-2 border-borderLight shadow-sm hover:border-sakura hover:shadow-[0_12px_28px_rgba(247,183,195,0.15)] transition-all duration-500 group cursor-pointer">
+                <div class="absolute inset-0 bg-sakura/5 mix-blend-color-burn z-10 pointer-events-none transition-all duration-500 group-hover:bg-transparent"></div>
+                <img data-edit-key="aksa-photo" src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?q=80&w=600&auto=format&fit=crop" alt="Aksa Sam" class="w-full h-full object-cover grayscale-[15%] group-hover:grayscale-0 group-hover:scale-[1.03] group-hover:brightness-105 transition-all duration-700 ease-out">
+              </div>
+            </div>
+
+            <!-- Information Column (Left) -->
+            <div class="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left">
+              <div class="mb-4">
+                <span data-edit-key="aksa-tagline" class="text-[10px] tracking-[0.2em] uppercase font-sans text-muted block mb-2 font-medium">Computer Applications & Global Vision</span>
+                <h3 data-edit-key="aksa-name" class="font-serif text-2xl md:text-3xl lg:text-4xl font-light text-charcoal tracking-[0.08em] uppercase">AKSA SAM</h3>
+              </div>
+
+              <div class="mb-6 flex flex-col md:flex-row items-center gap-2">
+                <span data-edit-key="aksa-nickname" class="text-xs font-serif italic text-plum font-normal">&ldquo;Aksa&rdquo;</span>
+                <span class="hidden md:inline text-borderLight">&bull;</span>
+                <span data-edit-key="aksa-role" class="text-xs tracking-wider uppercase font-sans text-muted font-medium">MCA Student &bull; International Study Experience</span>
+              </div>
+
+              <p data-edit-key="aksa-bio" class="text-xs md:text-sm font-sans text-muted leading-relaxed mb-6 font-light max-w-md">
+                Aksa infuses the cohort with a global viewpoint and broad academic horizons. Pursuing her Master of Computer Applications (MCA), she leverages her international study background to bring diverse, multi-cultural insights and highly coordinated tracking processes to the team's workflow.
+              </p>
+              
+              <p data-edit-key="aksa-mobile" class="text-xs tracking-[0.12em] text-plum uppercase font-mono mb-4">Mobile: +91 91883 04516</p>
+
+              <div class="border-l-2 border-sakura pl-4 py-1.5 mb-8 text-left max-w-md bg-neutral-50/30">
+                <p data-edit-key="aksa-quote" class="font-serif italic text-xs md:text-sm text-charcoal leading-relaxed font-light">
+                  &ldquo;Organization is not about rigidity; it is about creating a clear framework where every single team member has the freedom to produce their absolute best work.&rdquo;
+                </p>
+              </div>
+
+              <a data-edit-key="aksa-linkedin" href="https://linkedin.com/" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-2 px-5 py-2.5 border border-borderLight rounded-full text-[9px] font-sans tracking-[0.25em] uppercase text-charcoal bg-white shadow-sm transition-all duration-500 hover:bg-charcoal hover:border-charcoal hover:text-white hover:shadow-md cursor-pointer outline-none">
+                <svg class="w-3 h-3 text-plum group-hover:text-white transition-colors duration-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                </svg>
+                Professional Link
+                <svg class="w-3 h-3 text-muted group-hover:text-white transition-colors duration-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="absolute bottom-0 left-10 right-10 h-[1px] bg-gradient-to-r from-transparent via-borderLight to-transparent"></div>
+      </section>
+
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- SECTION: 3D GLASS BADGE NAVIGATION INDEX                          -->
+    <!-- ================================================================= -->
+    <section id="badge-nav" class="relative py-24 bg-white overflow-hidden border-t border-borderLight">
+      <!-- Decorative watercolor background glow -->
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-sakura/10 blur-[100px] pointer-events-none"></div>
+
+      <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
+        <span class="text-xs tracking-[0.25em] uppercase font-sans text-muted block mb-3">Interactive Index</span>
+        <h2 class="text-3xl md:text-4xl font-serif text-charcoal mb-4 font-normal">The Team Core</h2>
+        <p class="text-sm font-sans text-muted max-w-lg mx-auto mb-16 leading-relaxed">
+          Select a badge below to explore each individual’s journey, role, and personal reflections.
+        </p>
+
+        <!-- 3D Beveled Glass Badges Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          
+          <!-- Badge 1: Nithya -->
+          <button onclick="document.getElementById('nithya').scrollIntoView({ behavior: 'smooth', block: 'center' })" class="badge-sweep group relative px-6 py-8 rounded-xl bg-white border border-borderLight hover:border-sakura/50 text-center cursor-pointer transition-all duration-500 select-none overflow-hidden outline-none shadow-premium hover:shadow-hover3d hover:-translate-y-1.5 hover:scale-[1.025] active:scale-[0.98]">
+            <div class="absolute inset-0 bg-sakura/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            <!-- Sweep Effect Highlight -->
+            <div class="sweep-element absolute inset-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -skew-x-12 -translate-x-[110%] pointer-events-none"></div>
+            <span class="block text-sm tracking-[0.2em] uppercase font-serif font-medium text-charcoal group-hover:text-plum transition-colors duration-300">NITHYA</span>
+            <span class="block text-[10px] tracking-[0.1em] uppercase font-sans text-muted mt-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300">Nithya R Nair</span>
+            <div class="mt-4 flex justify-center">
+              <span class="text-[9px] tracking-wider uppercase px-2 py-0.5 rounded-full bg-neutral-50 border border-neutral-100 text-muted group-hover:bg-sakura/10 group-hover:text-plum group-hover:border-sakura/20 transition-all duration-300">Captain</span>
+            </div>
+          </button>
+
+          <!-- Badge 2: Athul -->
+          <button onclick="document.getElementById('athul').scrollIntoView({ behavior: 'smooth', block: 'center' })" class="badge-sweep group relative px-6 py-8 rounded-xl bg-white border border-borderLight hover:border-sakura/50 text-center cursor-pointer transition-all duration-500 select-none overflow-hidden outline-none shadow-premium hover:shadow-hover3d hover:-translate-y-1.5 hover:scale-[1.025] active:scale-[0.98]">
+            <div class="absolute inset-0 bg-sakura/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            <div class="sweep-element absolute inset-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -skew-x-12 -translate-x-[110%] pointer-events-none"></div>
+            <span class="block text-sm tracking-[0.2em] uppercase font-serif font-medium text-charcoal group-hover:text-plum transition-colors duration-300">ATHUL</span>
+            <span class="block text-[10px] tracking-[0.1em] uppercase font-sans text-muted mt-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300">Athul John Joseph</span>
+            <div class="mt-4 flex justify-center">
+              <span class="text-[9px] tracking-wider uppercase px-2 py-0.5 rounded-full bg-neutral-50 border border-neutral-100 text-muted group-hover:bg-sakura/10 group-hover:text-plum group-hover:border-sakura/20 transition-all duration-300">Vice Captain</span>
+            </div>
+          </button>
+
+          <!-- Badge 3: Lily -->
+          <button onclick="document.getElementById('lily').scrollIntoView({ behavior: 'smooth', block: 'center' })" class="badge-sweep group relative px-6 py-8 rounded-xl bg-white border border-borderLight hover:border-sakura/50 text-center cursor-pointer transition-all duration-500 select-none overflow-hidden outline-none shadow-premium hover:shadow-hover3d hover:-translate-y-1.5 hover:scale-[1.025] active:scale-[0.98]">
+            <div class="absolute inset-0 bg-sakura/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            <div class="sweep-element absolute inset-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -skew-x-12 -translate-x-[110%] pointer-events-none"></div>
+            <span class="block text-sm tracking-[0.2em] uppercase font-serif font-medium text-charcoal group-hover:text-plum transition-colors duration-300">LILY</span>
+            <span class="block text-[10px] tracking-[0.1em] uppercase font-sans text-muted mt-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300">Lily Elizabeth</span>
+            <div class="mt-4 flex justify-center">
+              <span class="text-[9px] tracking-wider uppercase px-2 py-0.5 rounded-full bg-neutral-50 border border-neutral-100 text-muted group-hover:bg-sakura/10 group-hover:text-plum group-hover:border-sakura/20 transition-all duration-300">Member</span>
+            </div>
+          </button>
+
+          <!-- Badge 4: Sangeeth -->
+          <button onclick="document.getElementById('sangeeth').scrollIntoView({ behavior: 'smooth', block: 'center' })" class="badge-sweep group relative px-6 py-8 rounded-xl bg-white border border-borderLight hover:border-sakura/50 text-center cursor-pointer transition-all duration-500 select-none overflow-hidden outline-none shadow-premium hover:shadow-hover3d hover:-translate-y-1.5 hover:scale-[1.025] active:scale-[0.98]">
+            <div class="absolute inset-0 bg-sakura/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            <div class="sweep-element absolute inset-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -skew-x-12 -translate-x-[110%] pointer-events-none"></div>
+            <span class="block text-sm tracking-[0.2em] uppercase font-serif font-medium text-charcoal group-hover:text-plum transition-colors duration-300">SANGEETH</span>
+            <span class="block text-[10px] tracking-[0.1em] uppercase font-sans text-muted mt-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300">Sangeeth M</span>
+            <div class="mt-4 flex justify-center">
+              <span class="text-[9px] tracking-wider uppercase px-2 py-0.5 rounded-full bg-neutral-50 border border-neutral-100 text-muted group-hover:bg-sakura/10 group-hover:text-plum group-hover:border-sakura/20 transition-all duration-300">Member</span>
+            </div>
+          </button>
+
+          <!-- Badge 5: Sharon -->
+          <button onclick="document.getElementById('sharon').scrollIntoView({ behavior: 'smooth', block: 'center' })" class="badge-sweep group relative px-6 py-8 rounded-xl bg-white border border-borderLight hover:border-sakura/50 text-center cursor-pointer transition-all duration-500 select-none overflow-hidden outline-none shadow-premium hover:shadow-hover3d hover:-translate-y-1.5 hover:scale-[1.025] active:scale-[0.98]">
+            <div class="absolute inset-0 bg-sakura/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            <div class="sweep-element absolute inset-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -skew-x-12 -translate-x-[110%] pointer-events-none"></div>
+            <span class="block text-sm tracking-[0.2em] uppercase font-serif font-medium text-charcoal group-hover:text-plum transition-colors duration-300">SHARON</span>
+            <span class="block text-[10px] tracking-[0.1em] uppercase font-sans text-muted mt-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300">Sharon Shabu</span>
+            <div class="mt-4 flex justify-center">
+              <span class="text-[9px] tracking-wider uppercase px-2 py-0.5 rounded-full bg-neutral-50 border border-neutral-100 text-muted group-hover:bg-sakura/10 group-hover:text-plum group-hover:border-sakura/20 transition-all duration-300">Member</span>
+            </div>
+          </button>
+
+          <!-- Badge 6: Ajith -->
+          <button onclick="document.getElementById('ajith').scrollIntoView({ behavior: 'smooth', block: 'center' })" class="badge-sweep group relative px-6 py-8 rounded-xl bg-white border border-borderLight hover:border-sakura/50 text-center cursor-pointer transition-all duration-500 select-none overflow-hidden outline-none shadow-premium hover:shadow-hover3d hover:-translate-y-1.5 hover:scale-[1.025] active:scale-[0.98]">
+            <div class="absolute inset-0 bg-sakura/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            <div class="sweep-element absolute inset-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -skew-x-12 -translate-x-[110%] pointer-events-none"></div>
+            <span class="block text-sm tracking-[0.2em] uppercase font-serif font-medium text-charcoal group-hover:text-plum transition-colors duration-300">AJITH</span>
+            <span class="block text-[10px] tracking-[0.1em] uppercase font-sans text-muted mt-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300">Ajith E Joemon</span>
+            <div class="mt-4 flex justify-center">
+              <span class="text-[9px] tracking-wider uppercase px-2 py-0.5 rounded-full bg-neutral-50 border border-neutral-100 text-muted group-hover:bg-sakura/10 group-hover:text-plum group-hover:border-sakura/20 transition-all duration-300">Member</span>
+            </div>
+          </button>
+
+          <!-- Badge 7: Lakshmi -->
+          <button onclick="document.getElementById('lakshmi').scrollIntoView({ behavior: 'smooth', block: 'center' })" class="badge-sweep group relative px-6 py-8 rounded-xl bg-white border border-borderLight hover:border-sakura/50 text-center cursor-pointer transition-all duration-500 select-none overflow-hidden outline-none shadow-premium hover:shadow-hover3d hover:-translate-y-1.5 hover:scale-[1.025] active:scale-[0.98]">
+            <div class="absolute inset-0 bg-sakura/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            <div class="sweep-element absolute inset-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -skew-x-12 -translate-x-[110%] pointer-events-none"></div>
+            <span class="block text-sm tracking-[0.2em] uppercase font-serif font-medium text-charcoal group-hover:text-plum transition-colors duration-300">LAKSHMI</span>
+            <span class="block text-[10px] tracking-[0.1em] uppercase font-sans text-muted mt-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300">R. Lakshmi</span>
+            <div class="mt-4 flex justify-center">
+              <span class="text-[9px] tracking-wider uppercase px-2 py-0.5 rounded-full bg-neutral-50 border border-neutral-100 text-muted group-hover:bg-sakura/10 group-hover:text-plum group-hover:border-sakura/20 transition-all duration-300">Member</span>
+            </div>
+          </button>
+
+          <!-- Badge 8: Aksa -->
+          <button onclick="document.getElementById('aksa').scrollIntoView({ behavior: 'smooth', block: 'center' })" class="badge-sweep group relative px-6 py-8 rounded-xl bg-white border border-borderLight hover:border-sakura/50 text-center cursor-pointer transition-all duration-500 select-none overflow-hidden outline-none shadow-premium hover:shadow-hover3d hover:-translate-y-1.5 hover:scale-[1.025] active:scale-[0.98]">
+            <div class="absolute inset-0 bg-sakura/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+            <div class="sweep-element absolute inset-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -skew-x-12 -translate-x-[110%] pointer-events-none"></div>
+            <span class="block text-sm tracking-[0.2em] uppercase font-serif font-medium text-charcoal group-hover:text-plum transition-colors duration-300">AKSA</span>
+            <span class="block text-[10px] tracking-[0.1em] uppercase font-sans text-muted mt-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300">Aksa Sam</span>
+            <div class="mt-4 flex justify-center">
+              <span class="text-[9px] tracking-wider uppercase px-2 py-0.5 rounded-full bg-neutral-50 border border-neutral-100 text-muted group-hover:bg-sakura/10 group-hover:text-plum group-hover:border-sakura/20 transition-all duration-300">Member</span>
+            </div>
+          </button>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ================================================================= -->
+    <!-- SECTION: TEAM REFLECTIONS (STRENGTHS & AREAS FOR GROWTH)          -->
+    <!-- ================================================================= -->
+    <section id="strengths" class="relative py-28 bg-white border-t border-borderLight">
+      <div class="absolute top-10 left-10 w-48 h-48 rounded-full bg-sakura/5 blur-3xl pointer-events-none"></div>
+      <div class="absolute bottom-10 right-10 w-48 h-48 rounded-full bg-plum/5 blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-6xl mx-auto px-6 relative z-10 select-none">
+        <!-- Section Header -->
+        <div class="text-center mb-20">
+          <span class="text-xs tracking-[0.25em] uppercase font-sans text-muted block mb-3">Synergy & Growth</span>
+          <h2 class="text-3xl md:text-4xl font-serif text-charcoal font-normal tracking-wide">Team Reflections</h2>
+          <div class="w-12 h-[1px] bg-plum mx-auto mt-4 opacity-35"></div>
+        </div>
+
+        <!-- Two Balanced Columns with Subtle Divider -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-16 lg:gap-24 relative">
+          <!-- Divider on desktop -->
+          <div class="hidden md:block absolute left-1/2 top-0 bottom-0 w-[1px] bg-borderLight -translate-x-1/2"></div>
+
+          <!-- Column 1: Strengths -->
+          <div class="flex flex-col space-y-10 reveal-on-scroll">
+            <div class="flex items-center gap-3.5 pb-4 border-b border-borderLight">
+              <!-- Check icon -->
+              <svg class="w-5 h-5 text-plum" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h3 class="text-xl font-serif text-charcoal tracking-wider uppercase font-light">Our Strengths</h3>
+            </div>
+
+            <div class="space-y-8">
+              <!-- Strength 1 -->
+              <div class="group flex flex-col space-y-2">
+                <h4 class="text-sm font-sans tracking-widest uppercase text-charcoal font-semibold group-hover:text-plum transition-colors duration-300">Collaborative Synergy</h4>
+                <p class="text-xs md:text-sm font-sans text-muted leading-relaxed font-light">
+                  We believe that exceptional solutions emerge from joint exploration. Our cross-functional syncs ensure that tech, design, and product strategy flow together organically.
+                </p>
+              </div>
+              <!-- Strength 2 -->
+              <div class="group flex flex-col space-y-2">
+                <h4 class="text-sm font-sans tracking-widest uppercase text-charcoal font-semibold group-hover:text-plum transition-colors duration-300">Creative Autonomy</h4>
+                <p class="text-xs md:text-sm font-sans text-muted leading-relaxed font-light">
+                  Each member is empowered to take full ownership of their specialty. This high trust environment invites bold ideas, custom visual expressions, and uncompromised detail.
+                </p>
+              </div>
+              <!-- Strength 3 -->
+              <div class="group flex flex-col space-y-2">
+                <h4 class="text-sm font-sans tracking-widest uppercase text-charcoal font-semibold group-hover:text-plum transition-colors duration-300">Resilient Agility</h4>
+                <p class="text-xs md:text-sm font-sans text-muted leading-relaxed font-light">
+                  We adapt fluidly to shifting scopes and complex requirements without losing focus. Our processes are structured to support both rapid changes and deep focus periods.
+                </p>
+              </div>
+              <!-- Strength 4 -->
+              <div class="group flex flex-col space-y-2">
+                <h4 class="text-sm font-sans tracking-widest uppercase text-charcoal font-semibold group-hover:text-plum transition-colors duration-300">Artisanal Execution</h4>
+                <p class="text-xs md:text-sm font-sans text-muted leading-relaxed font-light">
+                  From system queries to animation curves, we take pride in clean typography, balanced negative space, and premium visual layout. We build interfaces that are satisfying to touch and use.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Areas for Growth -->
+          <div class="flex flex-col space-y-10 reveal-on-scroll">
+            <div class="flex items-center gap-3.5 pb-4 border-b border-borderLight">
+              <!-- Trend icon -->
+              <svg class="w-5 h-5 text-plum" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+              </svg>
+              <h3 class="text-xl font-serif text-charcoal tracking-wider uppercase font-light">Areas for Growth</h3>
+            </div>
+
+            <div class="space-y-8">
+              <!-- Growth 1 -->
+              <div class="group flex flex-col space-y-2">
+                <h4 class="text-sm font-sans tracking-widest uppercase text-charcoal font-semibold group-hover:text-plum transition-colors duration-300">Balanced Delegation</h4>
+                <p class="text-xs md:text-sm font-sans text-muted leading-relaxed font-light">
+                  Because our members are deeply passionate about their domains, we occasionally over-index on individual execution. We are working on smoother hand-offs and structural delegation.
+                </p>
+              </div>
+              <!-- Growth 2 -->
+              <div class="group flex flex-col space-y-2">
+                <h4 class="text-sm font-sans tracking-widest uppercase text-charcoal font-semibold group-hover:text-plum transition-colors duration-300">Structured Time Estimation</h4>
+                <p class="text-xs md:text-sm font-sans text-muted leading-relaxed font-light">
+                  Chasing pixel-perfect craftsmanship can expand timelines. We are introducing lightweight milestones to balance our meticulous standards with rapid deliverable timelines.
+                </p>
+              </div>
+              <!-- Growth 3 -->
+              <div class="group flex flex-col space-y-2">
+                <h4 class="text-sm font-sans tracking-widest uppercase text-charcoal font-semibold group-hover:text-plum transition-colors duration-300">Cross-functional Training</h4>
+                <p class="text-xs md:text-sm font-sans text-muted leading-relaxed font-light">
+                  As the team scales, maintaining high fluency across technical and visual boundaries becomes key. We are establishing bi-weekly peer workshops to share specialized craft skills.
+                </p>
+              </div>
+              <!-- Growth 4 -->
+              <div class="group flex flex-col space-y-2">
+                <h4 class="text-sm font-sans tracking-widest uppercase text-charcoal font-semibold group-hover:text-plum transition-colors duration-300">Knowledge Centralization</h4>
+                <p class="text-xs md:text-sm font-sans text-muted leading-relaxed font-light">
+                  In a fast-moving, autonomous team, micro-decisions can stay in individual silos. We are actively centralizing our architectural blueprints and styling choices for better visibility.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ================================================================= -->
+    <!-- SECTION: FOOTER & CLOSING STATEMENT                               -->
+    <!-- ================================================================= -->
+    <footer id="footer" class="relative bg-white py-32 px-6 overflow-hidden border-t border-borderLight">
+      <!-- Footer custom bottom floral branch alignment -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-0.5 bg-gradient-to-r from-transparent via-[#EFEFEF] to-transparent"></div>
+        <svg class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[400px] md:w-[600px] h-[150px] opacity-[0.06]" viewBox="0 0 500 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 100,150 C 180,120, 320,120, 400,150" stroke="#5A4E4D" stroke-width="1.5" />
+          <circle cx="250" cy="125" r="8" fill="#F7B7C3" />
+          <circle cx="210" cy="132" r="5" fill="#C97A8D" />
+          <circle cx="290" cy="132" r="6" fill="#F7B7C3" />
+        </svg>
+      </div>
+
+      <div class="max-w-4xl mx-auto text-center relative z-10 select-none reveal-on-scroll">
+        <span class="text-[10px] tracking-[0.3em] uppercase font-sans text-muted block mb-4">Firefox Team Profile &bull; 2026</span>
+        <h2 class="text-4xl md:text-5xl font-serif text-charcoal font-light tracking-wide mb-6">Thank You</h2>
+        <p class="text-sm font-sans text-muted tracking-[0.2em] uppercase max-w-md mx-auto leading-relaxed mb-12">
+          For walking this path with us. May we continue to grow, create, and remain connected.
+        </p>
+
+        <!-- Back to Top button -->
+        <button onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="group inline-flex items-center gap-2 px-5 py-2.5 border border-borderLight rounded-full text-[9px] font-sans tracking-[0.2em] uppercase text-muted bg-white transition-all duration-300 shadow-sm hover:border-plum hover:text-plum cursor-pointer outline-none">
+          <!-- Up arrow icon -->
+          <svg class="w-3.5 h-3.5 text-plum group-hover:translate-y-[-2px] transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+          </svg>
+          Back to Top
+        </button>
+
+        <div class="mt-20 pt-8 border-t border-borderLight/60 text-[9px] tracking-widest text-neutral-400 font-mono uppercase">
+          &copy; 2026 Firefox. All rights reserved. Designed with intention.
+        </div>
+      </div>
+    </footer>
+
+
+    <!-- ================================================================= -->
+    <!-- SECTION: EDIT MODE FLOATING MODAL & CONTROLS                      -->
+    <!-- ================================================================= -->
+
+    <!-- Custom Elegant Edit Dialog / Modal -->
+    <div id="edit-modal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-500 ease-out select-none">
+      <!-- Backdrop -->
+      <div class="absolute inset-0 bg-charcoal/10 backdrop-blur-md" onclick="closeEditModal()"></div>
+      <!-- Modal Content Box -->
+      <div class="relative bg-white border border-borderLight rounded-2xl max-w-md w-full mx-4 p-8 shadow-2xl transform scale-95 transition-all duration-500 ease-out z-10">
+        <button onclick="closeEditModal()" class="absolute top-4 right-4 text-muted hover:text-charcoal cursor-pointer transition-colors outline-none">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        <h3 id="edit-modal-title" class="font-serif text-xl font-normal text-charcoal tracking-wide mb-6 uppercase">Edit Element</h3>
+        
+        <!-- Link Editor Fields -->
+        <div id="edit-link-fields" class="space-y-4">
+          <div>
+            <label class="block text-[10px] tracking-wider uppercase font-sans text-muted mb-2 font-medium">Link Address (URL)</label>
+            <input type="text" id="edit-link-url" class="w-full px-4 py-3 border border-borderLight rounded-lg text-xs font-sans text-charcoal bg-neutral-50/50 focus:outline-none focus:border-plum/50 focus:bg-white transition-all duration-300">
+          </div>
+          <div>
+            <label class="block text-[10px] tracking-wider uppercase font-sans text-muted mb-2 font-medium">Display Text</label>
+            <input type="text" id="edit-link-text" class="w-full px-4 py-3 border border-borderLight rounded-lg text-xs font-sans text-charcoal bg-neutral-50/50 focus:outline-none focus:border-plum/50 focus:bg-white transition-all duration-300">
+          </div>
+        </div>
+        
+        <!-- Image Editor Fields -->
+        <div id="edit-image-fields" class="space-y-4 hidden">
+          <div>
+            <label class="block text-[10px] tracking-wider uppercase font-sans text-muted mb-2 font-medium">Image Address (URL)</label>
+            <input type="text" id="edit-image-url" class="w-full px-4 py-3 border border-borderLight rounded-lg text-xs font-sans text-charcoal bg-neutral-50/50 focus:outline-none focus:border-plum/50 focus:bg-white transition-all duration-300">
+          </div>
+          <div class="relative flex flex-col items-center justify-center p-6 border-2 border-dashed border-borderLight hover:border-plum/50 rounded-xl bg-neutral-50/30 hover:bg-neutral-50/70 transition-all duration-300 cursor-pointer group" onclick="document.getElementById('edit-image-file').click()">
+            <input type="file" id="edit-image-file" accept="image/*" class="hidden" onchange="handleLocalImageUpload(event)">
+            <svg class="w-6 h-6 text-muted group-hover:text-plum transition-colors duration-300 mb-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span class="text-[10px] font-sans tracking-wide text-muted group-hover:text-charcoal transition-colors duration-300 text-center font-medium">Click or Drop a local photo here</span>
+            <span class="text-[8px] font-sans text-neutral-400 mt-1 uppercase tracking-wider">Supports JPEG, PNG, WebP</span>
+          </div>
+          <div id="upload-preview-container" class="hidden flex items-center gap-3 p-3 border border-borderLight rounded-lg bg-neutral-50/30">
+            <img id="upload-preview-img" class="w-12 h-12 object-cover rounded-lg border border-borderLight" src="" alt="Preview">
+            <div class="flex-1 min-w-0">
+              <p class="text-[9px] font-sans font-medium text-charcoal truncate" id="upload-file-name">local_image.jpg</p>
+              <p class="text-[8px] font-mono text-muted uppercase">Ready to save</p>
+            </div>
+            <button type="button" onclick="clearLocalImageUpload(event)" class="text-muted hover:text-plum cursor-pointer transition-colors p-1 rounded-full hover:bg-neutral-100 outline-none">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+          <div class="text-[9px] text-muted font-sans leading-relaxed text-center">
+            Tip: You can use an image web URL or select a local photo directly from your device!
+          </div>
+        </div>
+        
+        <div class="mt-8 flex items-center justify-end gap-3">
+          <button onclick="closeEditModal()" class="px-5 py-2.5 text-[10px] font-sans tracking-widest uppercase text-muted hover:text-charcoal cursor-pointer transition-colors outline-none">Cancel</button>
+          <button onclick="saveModalEdit()" class="px-6 py-2.5 bg-plum text-white text-[10px] font-sans tracking-widest uppercase rounded-full hover:bg-charcoal shadow-sm hover:shadow transition-all duration-300 cursor-pointer outline-none">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Small, Discrete Edit Mode Trigger Button (Bottom Left) -->
+    <div class="fixed bottom-4 left-4 z-50 flex flex-col items-start gap-3 select-none">
+      <!-- Saved Notification Bubble -->
+      <div id="save-notification" class="px-4 py-2 bg-charcoal text-white text-[10px] font-sans tracking-widest uppercase rounded-lg shadow-lg opacity-0 translate-y-2 pointer-events-none transition-all duration-500 flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+        Autosaved Successfully
+      </div>
+
+      <!-- Custom Sleek Edit Control Bar (Visible when active) -->
+      <div id="edit-control-bar" class="flex items-center gap-2 bg-white/95 backdrop-blur-md border border-borderLight p-1.5 rounded-full shadow-lg opacity-0 pointer-events-none scale-90 transition-all duration-500">
+        <span class="text-[9px] font-mono tracking-wider uppercase text-plum px-3 flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-plum animate-pulse"></span>
+          Editor Active
+        </span>
+        <button id="reset-button" onclick="resetToDefaults()" class="p-2 hover:bg-neutral-100 rounded-full text-muted hover:text-charcoal transition-all duration-300 cursor-pointer outline-none" title="Reset all content to original defaults">
+          <!-- Reset / Rotate icon -->
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+          </svg>
+        </button>
+        <div id="reset-divider" class="w-[1px] h-4 bg-borderLight mx-1"></div>
+      </div>
+
+      <!-- Toggle Button (Very discrete initially) -->
+      <button id="edit-mode-toggle" onclick="toggleEditMode()" class="w-10 h-10 rounded-full bg-white border border-borderLight hover:border-plum text-muted hover:text-plum flex items-center justify-center shadow-premium hover:shadow transition-all duration-500 cursor-pointer opacity-30 hover:opacity-100 outline-none" title="Toggle Edit Mode">
+        <!-- Pencil Icon -->
+        <svg id="edit-icon-pencil" class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+        </svg>
+        <!-- Close Icon (Hidden by default) -->
+        <svg id="edit-icon-close" class="w-4 h-4 hidden transition-transform duration-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Back to Top Floating Button (Bottom Right) -->
+    <div id="back-to-top-container" class="fixed bottom-4 right-4 z-50 select-none opacity-0 pointer-events-none scale-90 transition-all duration-500 ease-out">
+      <button onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" class="group w-10 h-10 rounded-full bg-white border border-borderLight hover:border-plum text-muted hover:text-plum flex items-center justify-center shadow-premium hover:shadow transition-all duration-500 cursor-pointer outline-none" title="Back to Top">
+        <!-- Up Arrow Icon -->
+        <svg class="w-4 h-4 transition-transform duration-300 group-hover:-translate-y-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+        </svg>
+      </button>
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- INTERACTIVE JAVASCRIPT: PROGRESS SCROLL-SPY & REVEAL ANIMATIONS   -->
+    <!-- ================================================================= -->
+    <script>
+      // Ordered sections to calculate scroll-spy tracking positions
+      const sectionIds = [
+        'hero',
+        'intro',
+        'nithya',
+        'athul',
+        'lily',
+        'sangeeth',
+        'sharon',
+        'ajith',
+        'lakshmi',
+        'aksa',
+        'badge-nav',
+        'strengths',
+        'footer'
+      ];
+
+      // Elements
+      const dotContainer = document.getElementById('reading-guide-dot-container');
+      const revealElements = document.querySelectorAll('.reveal-on-scroll');
+
+      // Scroll Spy Logic
+      function handleScroll() {
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (docHeight > 0) {
+          const scrollPercent = window.scrollY / docHeight;
+          // Scale vertical path between 12% top margin and 88% bottom margin
+          const startPercent = 12;
+          const endPercent = 88;
+          const currentDotTop = startPercent + (scrollPercent * (endPercent - startPercent));
+          if (dotContainer) {
+            dotContainer.style.top = currentDotTop + '%';
+          }
+        }
+
+        // Show/hide floating back to top button
+        const backToTop = document.getElementById('back-to-top-container');
+        if (backToTop) {
+          if (window.scrollY > 200) {
+            backToTop.classList.remove('opacity-0', 'pointer-events-none', 'scale-90');
+          } else {
+            backToTop.classList.add('opacity-0', 'pointer-events-none', 'scale-90');
+          }
+        }
+
+        // Scroll Triggered Fade-ins
+        const triggerMargin = window.innerHeight * 0.85;
+        revealElements.forEach(element => {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= triggerMargin) {
+            element.classList.add('active');
+          }
+        });
+      }
+
+      // Listeners
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      window.addEventListener('resize', handleScroll);
+      
+      // Trigger once initially to position elements correctly
+      setTimeout(handleScroll, 100);
+
+      // ================================================================= -->
+      // EDIT MODE ENGINE & PERSISTENCE SYSTEM                             -->
+      // ================================================================= -->
+      
+      let editModeActive = false;
+      let currentEditingTarget = null;
+      let saveTimeout = null;
+
+      const STORAGE_KEY = 'firefox-yearbook-edits';
+      const SESSION_EDIT_KEY = 'firefox-session-edit';
+
+      function showResetButtonIfNeeded() {
+        const resetBtn = document.getElementById('reset-button');
+        const resetDiv = document.getElementById('reset-divider');
+        const hasSaved = !!localStorage.getItem(STORAGE_KEY);
+        const isCurrentSession = !!sessionStorage.getItem(SESSION_EDIT_KEY);
+        
+        if (resetBtn && resetDiv) {
+          if (hasSaved && !isCurrentSession) {
+            // Reopened from previous session, cannot reset / redo
+            resetBtn.classList.add('hidden');
+            resetDiv.classList.add('hidden');
+          } else {
+            // Either no edits yet, or edited in current session, allow reset/redo
+            resetBtn.classList.remove('hidden');
+            resetDiv.classList.remove('hidden');
+          }
+        }
+      }
+
+      // Load saved edits from localStorage
+      function loadSavedEdits() {
+        try {
+          showResetButtonIfNeeded();
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (!saved) return;
+          const edits = JSON.parse(saved);
+          
+          Object.entries(edits).forEach(([key, val]) => {
+            const elements = document.querySelectorAll(`[data-edit-key="${key}"]`);
+            elements.forEach(el => {
+              if (el.tagName === 'IMG') {
+                el.src = val;
+              } else if (el.tagName === 'A') {
+                if (typeof val === 'object' && val !== null) {
+                  if (val.href) el.href = val.href;
+                  if (val.text) {
+                    updateLinkTextNode(el, val.text);
+                  }
+                } else {
+                  el.href = val;
+                }
+              } else {
+                el.innerHTML = val;
+              }
+            });
+          });
+        } catch (e) {
+          console.error("Error loading saved edits:", e);
+        }
+      }
+
+      // Helper to update only the text node in a link to keep SVGs
+      function updateLinkTextNode(linkEl, newText) {
+        let textNodeFound = false;
+        for (let child of linkEl.childNodes) {
+          if (child.nodeType === Node.TEXT_NODE && child.textContent.trim().length > 0) {
+            child.textContent = ' ' + newText.trim() + ' ';
+            textNodeFound = true;
+            break;
+          }
+        }
+        if (!textNodeFound) {
+          linkEl.appendChild(document.createTextNode(' ' + newText.trim() + ' '));
+        }
+      }
+
+      // Helper to extract only text node text from a link
+      function getLinkTextNodeValue(linkEl) {
+        for (let child of linkEl.childNodes) {
+          if (child.nodeType === Node.TEXT_NODE && child.textContent.trim().length > 0) {
+            return child.textContent.trim();
+          }
+        }
+        return linkEl.textContent.trim();
+      }
+
+      // Save to localStorage
+      function saveEdit(key, val) {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          const edits = saved ? JSON.parse(saved) : {};
+          edits[key] = val;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(edits));
+          
+          // Mark that we edited in this session so we can reset/redo
+          sessionStorage.setItem(SESSION_EDIT_KEY, 'true');
+          showResetButtonIfNeeded();
+          
+          triggerSaveNotification();
+        } catch (e) {
+          console.error("Error saving edit:", e);
+        }
+      }
+
+      function triggerSaveNotification() {
+        const notif = document.getElementById('save-notification');
+        if (!notif) return;
+        notif.style.opacity = '1';
+        notif.style.transform = 'translateY(0)';
+        
+        if (saveTimeout) clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+          notif.style.opacity = '0';
+          notif.style.transform = 'translateY(8px)';
+        }, 2000);
+      }
+
+      // Toggle Edit Mode Functionality
+      function toggleEditMode() {
+        editModeActive = !editModeActive;
+        const body = document.body;
+        const pencilIcon = document.getElementById('edit-icon-pencil');
+        const closeIcon = document.getElementById('edit-icon-close');
+        const controlBar = document.getElementById('edit-control-bar');
+        const toggleBtn = document.getElementById('edit-mode-toggle');
+        
+        if (editModeActive) {
+          body.classList.add('edit-mode-active');
+          pencilIcon.classList.add('hidden');
+          closeIcon.classList.remove('hidden');
+          controlBar.classList.remove('opacity-0', 'pointer-events-none', 'scale-90');
+          toggleBtn.classList.remove('opacity-30');
+          toggleBtn.classList.add('border-plum', 'text-plum');
+          
+          // Make text elements editable
+          document.querySelectorAll('[data-edit-key]').forEach(el => {
+            if (el.tagName !== 'IMG' && el.tagName !== 'A') {
+              el.setAttribute('contenteditable', 'plaintext-only');
+              el.addEventListener('blur', handleTextBlur);
+            }
+          });
+        } else {
+          body.classList.remove('edit-mode-active');
+          pencilIcon.classList.remove('hidden');
+          closeIcon.classList.add('hidden');
+          controlBar.classList.add('opacity-0', 'pointer-events-none', 'scale-90');
+          toggleBtn.classList.add('opacity-30');
+          toggleBtn.classList.remove('border-plum', 'text-plum');
+          
+          // Disable editability
+          document.querySelectorAll('[data-edit-key]').forEach(el => {
+            if (el.tagName !== 'IMG' && el.tagName !== 'A') {
+              el.removeAttribute('contenteditable');
+              el.removeEventListener('blur', handleTextBlur);
+            }
+          });
+        }
+      }
+
+      function handleTextBlur(e) {
+        const el = e.target;
+        const key = el.getAttribute('data-edit-key');
+        if (key) {
+          saveEdit(key, el.innerHTML);
+        }
+      }
+
+      // Intercept clicks in edit mode
+      document.addEventListener('click', function(e) {
+        if (!editModeActive) return;
+        
+        let target = e.target.closest('[data-edit-key]');
+        if (!target) return;
+        
+        const key = target.getAttribute('data-edit-key');
+        
+        if (target.tagName === 'A') {
+          e.preventDefault();
+          e.stopPropagation();
+          openLinkEditor(target, key);
+        } else if (target.tagName === 'IMG') {
+          e.preventDefault();
+          e.stopPropagation();
+          openImageEditor(target, key);
+        }
+      });
+
+      function openLinkEditor(linkEl, key) {
+        currentEditingTarget = linkEl;
+        const modal = document.getElementById('edit-modal');
+        const modalTitle = document.getElementById('edit-modal-title');
+        const linkFields = document.getElementById('edit-link-fields');
+        const imageFields = document.getElementById('edit-image-fields');
+        
+        modalTitle.textContent = "Edit Connection Link";
+        linkFields.classList.remove('hidden');
+        imageFields.classList.add('hidden');
+        
+        document.getElementById('edit-link-url').value = linkEl.getAttribute('href') || '';
+        document.getElementById('edit-link-text').value = getLinkTextNodeValue(linkEl);
+        
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.querySelector('.relative').classList.remove('scale-95');
+      }
+
+      let uploadedBase64 = null;
+
+      function openImageEditor(imgEl, key) {
+        currentEditingTarget = imgEl;
+        const modal = document.getElementById('edit-modal');
+        const modalTitle = document.getElementById('edit-modal-title');
+        const linkFields = document.getElementById('edit-link-fields');
+        const imageFields = document.getElementById('edit-image-fields');
+        
+        modalTitle.textContent = "Edit Portrait Photo";
+        linkFields.classList.add('hidden');
+        imageFields.classList.remove('hidden');
+        
+        document.getElementById('edit-image-url').value = imgEl.getAttribute('src') || '';
+        
+        // Reset file uploader state
+        uploadedBase64 = null;
+        const fileInput = document.getElementById('edit-image-file');
+        if (fileInput) fileInput.value = '';
+        const previewContainer = document.getElementById('upload-preview-container');
+        if (previewContainer) previewContainer.classList.add('hidden');
+        
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.querySelector('.relative').classList.remove('scale-95');
+      }
+
+      function handleLocalImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        if (!file.type.startsWith('image/')) {
+          alert('Please select a valid image file.');
+          return;
+        }
+        
+        // Warn if file is too large (over 2.5MB) to prevent local storage quota exceeded error
+        if (file.size > 2.5 * 1024 * 1024) {
+          alert('The image is too large (over 2.5MB). Please choose a smaller image so it can be saved locally in your browser cache.');
+          return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          uploadedBase64 = e.target.result;
+          
+          const previewImg = document.getElementById('upload-preview-img');
+          const previewContainer = document.getElementById('upload-preview-container');
+          const fileNameEl = document.getElementById('upload-file-name');
+          
+          if (previewImg && previewContainer && fileNameEl) {
+            previewImg.src = uploadedBase64;
+            fileNameEl.textContent = file.name;
+            previewContainer.classList.remove('hidden');
+          }
+          
+          // Clear URL input since we are uploading a local image
+          document.getElementById('edit-image-url').value = '';
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function clearLocalImageUpload(event) {
+        if (event) {
+          event.stopPropagation();
+          event.preventDefault();
+        }
+        uploadedBase64 = null;
+        const fileInput = document.getElementById('edit-image-file');
+        if (fileInput) fileInput.value = '';
+        const previewContainer = document.getElementById('upload-preview-container');
+        if (previewContainer) previewContainer.classList.add('hidden');
+        
+        if (currentEditingTarget) {
+          document.getElementById('edit-image-url').value = currentEditingTarget.getAttribute('src') || '';
+        }
+      }
+
+      function closeEditModal() {
+        const modal = document.getElementById('edit-modal');
+        if (!modal) return;
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        modal.querySelector('.relative').classList.add('scale-95');
+        currentEditingTarget = null;
+      }
+
+      function saveModalEdit() {
+        if (!currentEditingTarget) return;
+        const key = currentEditingTarget.getAttribute('data-edit-key');
+        if (!key) return;
+        
+        if (currentEditingTarget.tagName === 'A') {
+          const newUrl = document.getElementById('edit-link-url').value;
+          const newText = document.getElementById('edit-link-text').value;
+          
+          currentEditingTarget.href = newUrl;
+          updateLinkTextNode(currentEditingTarget, newText);
+          
+          saveEdit(key, { href: newUrl, text: newText });
+        } else if (currentEditingTarget.tagName === 'IMG') {
+          let newSrc = uploadedBase64;
+          if (!newSrc) {
+            newSrc = document.getElementById('edit-image-url').value;
+          }
+          currentEditingTarget.src = newSrc;
+          
+          saveEdit(key, newSrc);
+        }
+        
+        closeEditModal();
+      }
+
+      function resetToDefaults() {
+        if (confirm("Are you sure you want to reset all custom edits and restore original team profile information? This cannot be undone.")) {
+          localStorage.removeItem(STORAGE_KEY);
+          sessionStorage.removeItem(SESSION_EDIT_KEY);
+          window.location.reload();
+        }
+      }
+
+      // Load on start
+      loadSavedEdits();
+    </script>
+  </body>
 </html>
