@@ -1666,7 +1666,22 @@
         } else if (currentEditingTarget.tagName === 'IMG') {
           let newSrc = uploadedBase64;
           if (!newSrc) {
-            newSrc = document.getElementById('edit-image-url').value;
+            let inputVal = document.getElementById('edit-image-url').value.trim();
+            
+            // Intelligent auto-parsing of HTML embed codes (e.g. from ImgBB or postimages)
+            if (inputVal.includes('<img') || inputVal.includes('src=')) {
+              const srcMatch = inputVal.match(/src=["']([^"']+)["']/i);
+              if (srcMatch && srcMatch[1]) {
+                inputVal = srcMatch[1];
+              }
+            }
+            
+            // Check if they pasted an ImgBB viewer page link instead of a direct link
+            if (inputVal.match(/https?:\/\/ibb\.co\/[a-zA-Z0-9]+/i) && !inputVal.includes('i.ibb.co')) {
+              alert("You pasted an ImgBB page URL (viewer link). For ImgBB images, please paste either:\n1. The HTML Embed code (it will be parsed automatically!)\n2. The 'Direct Link' (usually starts with i.ibb.co)\n\nWe will try to load it, but if it doesn't show up, please copy and paste the HTML embed code from ImgBB instead!");
+            }
+            
+            newSrc = inputVal;
           }
           currentEditingTarget.src = newSrc;
           
