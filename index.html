@@ -99,15 +99,37 @@
       .edit-mode-active a[data-edit-key] {
         cursor: pointer;
       }
+
+      /* Proportional layout and typography scaling on large/high-resolution viewports */
+      @media (min-width: 1400px) {
+        html {
+          font-size: 17px;
+        }
+      }
+      @media (min-width: 1800px) {
+        html {
+          font-size: 18.5px;
+        }
+      }
+      @media (min-width: 2200px) {
+        html {
+          font-size: 20px;
+        }
+      }
+      @media (min-width: 2600px) {
+        html {
+          font-size: 22px;
+        }
+      }
     </style>
   </head>
   <body class="text-charcoal font-sans selection:bg-sakura/30 selection:text-plum overflow-x-hidden relative">
 
     <!-- ================================================================= -->
-    <!-- SECTION: PROGRESS INDICATOR (VERTICAL GUIDE LINE + MOVING DOT)  -->
+    <!-- SECTION: PROGRESS INDICATOR (LEFT-SIDE TIMELINE GUIDE + DOT)      -->
     <!-- ================================================================= -->
-    <div id="progress-indicator-container" class="fixed inset-0 pointer-events-none z-40 hidden md:block select-none">
-      <!-- Centered Thin Vertical Line -->
+    <div id="progress-indicator-container" class="fixed inset-y-0 left-6 lg:left-12 w-8 pointer-events-none z-40 hidden md:block select-none">
+      <!-- Centered Thin Vertical Line in the margin area -->
       <div class="absolute left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-transparent via-borderLight to-transparent transform -translate-x-1/2"></div>
       
       <!-- Moving Dot -->
@@ -115,6 +137,8 @@
         <div class="w-3 h-3 rounded-full bg-plum border-2 border-white shadow-sm ring-4 ring-sakura/30 z-50"></div>
       </div>
     </div>
+
+
 
 
     <!-- ================================================================= -->
